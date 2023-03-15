@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { ConfigProvider } from 'antd';
+import { FC, useLayoutEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { ErrorHandlder } from 'components/shared/ErrorHandler';
+import { antdTheme } from 'utils/antdTheme';
+import { Index } from './components/index';
 
-function App() {
+export const App: FC = () => {
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    document.scrollingElement?.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ConfigProvider theme={antdTheme}>
+      <Routes>
+        <Route index element={<Index />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      <ErrorHandlder />
+    </ConfigProvider>
   );
-}
-
-export default App;
+};

@@ -1,0 +1,50 @@
+import { message } from 'antd';
+import delay from 'delay';
+import { remove } from 'lodash-es';
+import { FC, useEffect, useRef } from 'react';
+import { usePageVisibility } from 'react-page-visibility';
+import { useDispatch, useSelector } from 'hooks/redux';
+import { clearError, registerErrorHandler, selectLastError } from 'store/slices/errors';
+import { BaseError } from 'utils/errors';
+
+export const ErrorHandlder: FC = () => {
+  const recentLocalMessages = useRef<string[]>([]);
+
+  const error = useSelector(selectLastError);
+
+  const pageVisible = usePageVisibility();
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      await dispatch(registerErrorHandler()).unwrap();
+    })();
+  }, [dispatch]);
+
+  useEffect(() => {
+    setTimeout(async () => {
+      if (error) {
+        dispatch(clearError(error));
+        if (error instanceof BaseError) {
+          if (error.expose) {
+            const localMessage = error.getLocalMessage();
+            if (localMessage && pageVisible) {
+              if (!recentLocalMessages.current.includes(localMessage)) {
+                recentLocalMessages.current.push(localMessage);
+                message.error(localMessage);
+                await delay(1000);
+                remove(recentLocalMessages.current, item => item === localMessage);
+              }
+            }
+            error.printTraceStack();
+          }
+          return;
+        }
+        console.error(error);
+      }
+    });
+  }, [error, pageVisible, dispatch]);
+
+  return <></>;
+};
