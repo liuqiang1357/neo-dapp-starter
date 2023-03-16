@@ -5,7 +5,7 @@ import o3dapiNeoN3 from 'o3-dapi-neo3';
 import { NetworkId, WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignedMessage, SignedMessageWithoutSalt } from './wallet';
+import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
 
 const NETWORK_MAP: Record<string, NetworkId> = {
   N3MainNet: NetworkId.MainNet,
@@ -27,14 +27,13 @@ class O3 extends BaseWallet {
   }
 
   @Catch('handleError')
-  async signMessage(message: string): Promise<SignedMessage> {
-    const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
-    return { message, salt, publicKey, signature };
-  }
-
-  @Catch('handleError')
-  async signMessageWithoutSalt(_message: string): Promise<SignedMessageWithoutSalt> {
-    throw new Error('Method not implemented.');
+  async signMessage({ message, withoutSalt }: SignMessageParams): Promise<SignMessageResult> {
+    if (withoutSalt !== true) {
+      const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
+      return { message, salt, publicKey, signature };
+    } else {
+      throw new Error('Parameter withoutSalt is not supported.');
+    }
   }
 
   handleError(error: any): never {

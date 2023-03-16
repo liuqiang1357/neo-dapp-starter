@@ -3,7 +3,7 @@ import { windowReady } from 'html-ready';
 import { NetworkId, WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignedMessage, SignedMessageWithoutSalt } from './wallet';
+import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
 
 const NEOLINE_WAS_CONNECTED = 'NEOLINE_WAS_CONNECTED';
 
@@ -32,17 +32,16 @@ class NeoLine extends BaseWallet {
   }
 
   @Catch('handleError')
-  async signMessage(message: string): Promise<SignedMessage> {
-    const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
-    return { message, salt, publicKey, signature };
-  }
-
-  @Catch('handleError')
-  async signMessageWithoutSalt(message: string): Promise<SignedMessageWithoutSalt> {
-    const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSalt({
-      message,
-    });
-    return { message, publicKey, signature };
+  async signMessage({ message, withoutSalt }: SignMessageParams): Promise<SignMessageResult> {
+    if (withoutSalt !== true) {
+      const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
+      return { message, salt, publicKey, signature };
+    } else {
+      const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSalt({
+        message,
+      });
+      return { message, publicKey, signature };
+    }
   }
 
   handleError(error: any): never {

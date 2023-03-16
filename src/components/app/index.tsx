@@ -1,9 +1,9 @@
 import { ConfigProvider } from 'antd';
 import { FC, useLayoutEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { ErrorHandlder } from 'components/shared/ErrorHandler';
+import { Home } from 'components/home';
 import { antdTheme } from 'utils/antdTheme';
-import { Index } from './components/index';
+import { ErrorHandlder } from './ErrorHandler';
 
 export const App: FC = () => {
   const location = useLocation();
@@ -15,7 +15,7 @@ export const App: FC = () => {
   return (
     <ConfigProvider theme={antdTheme}>
       <Routes>
-        <Route index element={<Index />} />
+        <Route index element={<Home />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <ErrorHandlder />

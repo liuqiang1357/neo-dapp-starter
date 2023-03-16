@@ -17,15 +17,14 @@ export interface InvokeParams {
   signers?: Signer[];
 }
 
-export interface SignedMessage {
+export interface SignMessageParams {
   message: string;
-  salt: string;
-  publicKey: string;
-  signature: string;
+  withoutSalt?: boolean;
 }
 
-export interface SignedMessageWithoutSalt {
+export interface SignMessageResult {
   message: string;
+  salt?: string;
   publicKey: string;
   signature: string;
 }
@@ -38,8 +37,7 @@ export interface Wallet {
   disconnect(): Promise<void>;
 
   invoke(params: InvokeParams): Promise<string>;
-  signMessage(message: string): Promise<SignedMessage>;
-  signMessageWithoutSalt(message: string): Promise<SignedMessageWithoutSalt>;
+  signMessage(params: SignMessageParams): Promise<SignMessageResult>;
 
   handleError(error: any): never;
 }

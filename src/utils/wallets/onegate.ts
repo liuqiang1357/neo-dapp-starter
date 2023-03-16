@@ -5,7 +5,7 @@ import { Catch } from 'catchee';
 import { NetworkId, WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignedMessage, SignedMessageWithoutSalt } from './wallet';
+import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
 
 declare const window: Window & {
   OneGate?: Provider;
@@ -32,19 +32,18 @@ class OneGate extends BaseWallet {
   }
 
   @Catch('handleError')
-  async signMessage(message: string): Promise<SignedMessage> {
-    const { salt, publicKey, signature } = await this.getDapi().signMessage({
-      message: message,
-    });
-    return { message, salt, publicKey, signature };
-  }
-
-  @Catch('handleError')
-  async signMessageWithoutSalt(message: string): Promise<SignedMessageWithoutSalt> {
-    const { publicKey, signature } = await this.getDapi().signMessageWithoutSalt({
-      message: message,
-    });
-    return { message, publicKey, signature };
+  async signMessage({ message, withoutSalt }: SignMessageParams): Promise<SignMessageResult> {
+    if (withoutSalt !== true) {
+      const { salt, publicKey, signature } = await this.getDapi().signMessage({
+        message: message,
+      });
+      return { message, salt, publicKey, signature };
+    } else {
+      const { publicKey, signature } = await this.getDapi().signMessageWithoutSalt({
+        message: message,
+      });
+      return { message, publicKey, signature };
+    }
   }
 
   handleError(error: any): never {

@@ -1,6 +1,7 @@
-import { Button, Popover } from 'antd';
+import { Popover } from 'antd';
 import { ComponentProps, CSSProperties, FC, useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { Button } from 'components/shared/Button';
 import { useSelector, useStore } from 'hooks/redux';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
@@ -54,12 +55,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
     <div className={twMerge('inline-block', className)} {...props}>
       {walletState ? (
         <div className="group relative">
-          <Button
-            className="flex items-center group-hover:opacity-0"
-            type="primary"
-            ghost
-            onClick={disconnect}
-          >
+          <Button className="group-hover:opacity-0" type="primary">
             <img className="h-[16px] w-[16px]" src={WALLET_INFOS[walletState.name].image} />
             <div className="ml-[10px]">
               {formatLongText(walletState.address, { headTailLength: 5 })}
@@ -87,9 +83,8 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
                 .map(info => (
                   <Button
                     key={info.name}
-                    className="flex items-center justify-start"
-                    type="primary"
-                    ghost
+                    className="justify-start"
+                    type="default"
                     disabled={walletStates[info.name] == null}
                     onClick={() => connect(info.name)}
                   >
@@ -100,9 +95,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
             </div>
           }
         >
-          <Button type="primary" ghost>
-            Connect Wallet
-          </Button>
+          <Button type="default">Connect Wallet</Button>
         </Popover>
       )}
     </div>

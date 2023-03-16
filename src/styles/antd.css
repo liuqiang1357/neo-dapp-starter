@@ -1,3 +1,6 @@
+/* Prefer modifying theme variables in antdTheme.ts */
+/* See components: https://ant.design/components/overview/ */
+
 /* Popover */
 .ant-popover {
   @apply font-[number:inherit];
