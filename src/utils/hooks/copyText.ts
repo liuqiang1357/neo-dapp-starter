@@ -7,6 +7,6 @@ export function useCopyText(): (text: string) => void {
 
   return (text: string) => {
     copy(text);
-    message.success(t('common:messages.copied', { text }));
+    message.success(t('messages.copied', { text }));
   };
 }

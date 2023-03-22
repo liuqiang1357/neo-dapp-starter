@@ -1,10 +1,9 @@
-import 'antd/dist/reset.css';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import 'i18n';
 import 'styles/index.css';
-import { App } from 'components/app';
+import { App } from 'app';
 import { store } from 'store';
 import { IN_PRODUCTION } from 'utils/env';
 import { reportWebVitals } from './reportWebVitals';

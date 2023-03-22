@@ -16,11 +16,11 @@ export function formatEnum(
     return '-';
   }
   const finalValue = Array.isArray(value) ? value.join('.') : value;
-  if (i18n.exists(`common:enums.${type}.${finalValue}`)) {
-    return i18n.t(`common:enums.${type}.${finalValue}`);
+  if (i18n.exists(`enums.${type}.${finalValue}`)) {
+    return i18n.t(`enums.${type}.${finalValue}`);
   }
   if (!ingoreMissing) {
-    console.warn(`Enum path not found: ${`common:enums.${type}.${finalValue}`}`);
+    console.warn(`Enum path not found: ${`enums.${type}.${finalValue}`}`);
   }
   return String(defaultValue ?? finalValue);
 }

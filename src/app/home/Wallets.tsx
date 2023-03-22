@@ -1,8 +1,7 @@
 import { Popover } from 'antd';
 import { ComponentProps, CSSProperties, FC, useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { Button } from 'components/shared/Button';
-import { useSelector, useStore } from 'hooks/redux';
+import { Button } from 'app/shared/Button';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
   connectWallet,
@@ -15,6 +14,7 @@ import {
 import { WALLET_INFOS } from 'utils/configs';
 import { WalletName } from 'utils/enums';
 import { formatLongText } from 'utils/formatters';
+import { useSelector, useStore } from 'utils/hooks/redux';
 
 export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   const walletsPopoverOpen = useSelector(selectWalletsPopoverOpen);
