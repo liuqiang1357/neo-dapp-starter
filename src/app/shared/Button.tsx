@@ -1,19 +1,26 @@
 import { Button as AntButton, ConfigProvider } from 'antd';
 import { ComponentProps, ComponentRef, forwardRef, MouseEventHandler } from 'react';
-import { LinkProps, useHref, useLinkClickHandler } from 'react-router-dom';
-import { twMerge } from 'tailwind-merge';
+import {
+  LinkProps,
+  useHref,
+  useLinkClickHandler,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import { omitUndefined } from 'utils/misc';
-import { tw } from 'utils/tailwind';
+import { tm, tw } from 'utils/tailwind';
 
 type AntButtonProps = ComponentProps<typeof AntButton>;
 
 type Props = Omit<AntButtonProps, 'type' | 'loading'> &
   Omit<LinkProps, 'to'> & {
     type?: AntButtonProps['type'] | 'unstyled';
-    loading?: boolean;
-    to?: LinkProps['to'];
     colorPrimary?: string;
     colorText?: string;
+    linkActiveClass?: string;
+    linkInactiveClass?: string;
+    loading?: boolean;
+    to?: LinkProps['to'];
     onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
   };
 
@@ -22,18 +29,20 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
     {
       className,
       type = 'unstyled',
-      href,
-      target,
+      colorPrimary,
+      colorText,
+      linkActiveClass,
+      linkInactiveClass,
       loading = false,
       disabled = false,
-      onClick,
+      href,
+      target,
       to,
       replace,
       state,
       preventScrollReset,
       relative,
-      colorPrimary,
-      colorText,
+      onClick,
       ...props
     },
     ref,
@@ -46,20 +55,28 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
     switch (type) {
       case 'unstyled':
         finalType = 'text';
-        baseClassName += tw` h-auto border-none p-0 text-[color:inherit] transition-all duration-300 font-[number:inherit] ${
-          finalDisabled ? 'opacity-30' : 'hover:opacity-60'
+        baseClassName += tw` h-auto border-none p-0 text-[length:inherit] font-[number:inherit] text-[color:inherit] [text-align:inherit] ${
+          finalDisabled ? tw`opacity-30` : tw`hover:opacity-60`
         }`;
         break;
       default:
         finalType = type;
     }
 
-    let linkHref: string | null = useHref(to ?? '');
-    linkHref = to != null ? linkHref : null;
+    const matchResult = useResolvedPath(to ?? '');
+    const location = useLocation();
 
-    const finalHref = finalDisabled ? null : linkHref ?? href;
+    const linkActive = to != null ? matchResult.pathname === location.pathname : null;
+    if (linkActive != null) {
+      baseClassName += ` ${linkActive ? linkActiveClass ?? '' : linkInactiveClass ?? ''}`;
+    }
 
-    let linkOnClick: MouseEventHandler<HTMLElement> | null = useLinkClickHandler<HTMLElement>(
+    let toHref: string | null = useHref(to ?? '');
+    toHref = to != null ? toHref : null;
+
+    const finalHref = finalDisabled ? null : toHref ?? href;
+
+    let linkClickHandler: MouseEventHandler<HTMLElement> | null = useLinkClickHandler<HTMLElement>(
       to ?? '',
       {
         replace,
@@ -69,12 +86,12 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
         relative,
       },
     );
-    linkOnClick = to != null ? linkOnClick : null;
+    linkClickHandler = to != null ? linkClickHandler : null;
 
-    const finalOnClick: Props['onClick'] = event => {
+    const handleClick: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = event => {
       onClick?.(event);
       if (!event.defaultPrevented) {
-        linkOnClick?.(event);
+        linkClickHandler?.(event);
       }
     };
 
@@ -92,13 +109,13 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
       >
         <AntButton
           ref={ref}
-          className={twMerge(baseClassName, className)}
+          className={tm(baseClassName, className)}
           type={finalType}
           href={finalHref ?? undefined}
           target={target}
           loading={loading}
           disabled={finalDisabled}
-          onClick={finalOnClick}
+          onClick={handleClick}
           {...props}
         />
       </ConfigProvider>

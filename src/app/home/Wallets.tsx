@@ -1,6 +1,5 @@
 import { Popover } from 'antd';
 import { ComponentProps, CSSProperties, FC, useEffect } from 'react';
-import { twMerge } from 'tailwind-merge';
 import { Button } from 'app/shared/Button';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
@@ -15,6 +14,7 @@ import { WALLET_INFOS } from 'utils/configs';
 import { WalletName } from 'utils/enums';
 import { formatLongText } from 'utils/formatters';
 import { useSelector, useStore } from 'utils/hooks/redux';
+import { tm } from 'utils/tailwind';
 
 export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   const walletsPopoverOpen = useSelector(selectWalletsPopoverOpen);
@@ -52,7 +52,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   }, [dispatch]);
 
   return (
-    <div className={twMerge('inline-block', className)} {...props}>
+    <div className={tm('inline-block', className)} {...props}>
       {walletState ? (
         <div className="group relative">
           <Button className="group-hover:opacity-0" type="primary">
