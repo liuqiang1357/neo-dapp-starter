@@ -5,8 +5,8 @@
   "scripts": {
     "start": "cross-env REACT_APP_TARGET=testnet craco start",
     "start:mainnet": "cross-env REACT_APP_TARGET=mainnet craco start",
-    "build:testnet": "cross-env REACT_APP_TARGET=testnet craco build",
-    "build": "cross-env REACT_APP_TARGET=mainnet craco build",
+    "build:testnet": "cross-env GENERATE_SOURCEMAP=false REACT_APP_TARGET=testnet craco build",
+    "build": "cross-env GENERATE_SOURCEMAP=false REACT_APP_TARGET=mainnet craco build",
     "test": "craco test",
     "lint": "eslint . --fix",
     "format": "prettier . --write"
