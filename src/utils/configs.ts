@@ -1,7 +1,7 @@
-import neoline from 'assets/images/common/wallets/neoline.png';
-import neon from 'assets/images/common/wallets/neon.svg';
-import o3 from 'assets/images/common/wallets/o3.png';
-import onegate from 'assets/images/common/wallets/onegate.png';
+import neoline from 'assets/images/wallets/neoline.png';
+import neon from 'assets/images/wallets/neon.svg';
+import o3 from 'assets/images/wallets/o3.png';
+import onegate from 'assets/images/wallets/onegate.png';
 import { NetworkId, WalletName } from './enums';
 import { TARGET_MAINNET } from './env';
 import { WalletInfo } from './models';

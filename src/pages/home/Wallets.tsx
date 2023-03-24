@@ -1,6 +1,6 @@
 import { Popover } from 'antd';
 import { ComponentProps, CSSProperties, FC, useEffect } from 'react';
-import { Button } from 'app/shared/Button';
+import { Button } from 'pages/shared/Button';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
   connectWallet,
@@ -15,6 +15,7 @@ import { WalletName } from 'utils/enums';
 import { formatLongText } from 'utils/formatters';
 import { useSelector, useStore } from 'utils/hooks/redux';
 import { tm } from 'utils/tailwind';
+import disconnectImage from './_images/disconnect.svg';
 
 export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   const walletsPopoverOpen = useSelector(selectWalletsPopoverOpen);
@@ -67,7 +68,8 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
             danger
             onClick={disconnect}
           >
-            Disconnect
+            <img src={disconnectImage} />
+            <div className="ml-[10px]">Disconnect</div>
           </Button>
         </div>
       ) : (

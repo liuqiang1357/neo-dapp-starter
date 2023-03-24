@@ -1,7 +1,7 @@
 import { ConfigProvider } from 'antd';
 import { FC, useLayoutEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { Home } from 'app/home';
+import { Home } from 'pages/home';
 import { antdTheme } from 'utils/antdTheme';
 import { ErrorHandlder } from './ErrorHandler';
 
