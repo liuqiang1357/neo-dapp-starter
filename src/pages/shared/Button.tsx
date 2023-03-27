@@ -55,7 +55,7 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
     switch (type) {
       case 'unstyled':
         finalType = 'text';
-        baseClassName += tw` h-auto border-none p-0 text-[length:inherit] font-[number:inherit] text-[color:inherit] [text-align:inherit] ${
+        baseClassName += tw` rounded-none h-auto border-none p-0 text-[length:inherit] font-[number:inherit] text-[color:inherit] [text-align:inherit] ${
           finalDisabled ? tw`opacity-30` : tw`hover:opacity-60`
         }`;
         break;
