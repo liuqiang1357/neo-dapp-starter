@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import { ComponentProps, CSSProperties, FC, useEffect } from 'react';
+import { ComponentProps, FC, useEffect } from 'react';
 import { Button } from 'pages/_shared/Button';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
@@ -76,7 +76,6 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
         <Popover
           open={walletsPopoverOpen}
           onOpenChange={open => dispatch(setWalletsPopoverOpen(open))}
-          overlayStyle={{ '--popover-border-radius': '10px' } as CSSProperties}
           trigger="click"
           content={
             <div className="flex min-w-[180px] flex-col space-y-[10px] p-[20px]">
