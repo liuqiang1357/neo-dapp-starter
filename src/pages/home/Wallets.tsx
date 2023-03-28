@@ -1,6 +1,6 @@
 import { Popover } from 'antd';
 import { ComponentProps, CSSProperties, FC, useEffect } from 'react';
-import { Button } from 'pages/shared/Button';
+import { Button } from 'pages/_shared/Button';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
   connectWallet,
