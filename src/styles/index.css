@@ -13,7 +13,6 @@ body,
 
 body {
   @apply m-0 font-sans text-[14px] leading-normal antialiased;
-  overflow-wrap: anywhere;
 }
 
 *,
