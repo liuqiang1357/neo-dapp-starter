@@ -11,7 +11,7 @@ import { createAsyncThunk } from 'utils/misc';
 import { ActiveWalletState } from 'utils/models';
 import { parseEnum } from 'utils/parsers';
 import { getWallet } from 'utils/wallets';
-import { WalletState } from 'utils/wallets/wallet';
+import { Wallet, WalletState } from 'utils/wallets/wallet';
 
 const LAST_CONNECTED_WALLET_NAME = 'LAST_CONNECTED_WALLET_NAME';
 
@@ -33,71 +33,101 @@ export const walletsSlice = createSlice({
 
 export const { setWalletState, setLastConnectedWalletName } = walletsSlice.actions;
 
-const deferred = pDefer();
-let inited = false;
+let initWalletsCalled = false;
+
+const walletsInitedDeferred = pDefer();
+const lastConnectedWalletInitedDeferred = pDefer();
 
 export const initWallets = createAsyncThunk('initWallets', async (args, { dispatch, getState }) => {
   try {
-    if (inited) {
-      return deferred.promise;
+    if (initWalletsCalled) {
+      return walletsInitedDeferred.promise;
     }
-    inited = true;
+    initWalletsCalled = true;
+
     await dispatch(loadLastConnectedWalletName()).unwrap();
     const lastConnectedWalletName = selectLastConnectedWalletName(getState() as State);
-    await Promise.all(
-      Object.values(WALLET_INFOS)
-        .filter(info => info.disabled !== true)
-        .map(async info => {
-          const wallet = await getWallet(info.name);
-          wallet.onWalletStateChange = walletState => dispatch(setWalletState(walletState));
-          await wallet.init(lastConnectedWalletName === info.name);
-        }),
-    );
+
+    const init = async (isLastConnected: boolean) => {
+      await Promise.all(
+        Object.values(WALLET_INFOS)
+          .filter(info => info.disabled !== true)
+          .filter(info => (info.name === lastConnectedWalletName) === isLastConnected)
+          .map(async info => {
+            const wallet = await getWallet(info.name);
+            wallet.onWalletStateChange = walletState => dispatch(setWalletState(walletState));
+            await wallet.init(lastConnectedWalletName === info.name);
+          }),
+      );
+    };
+
+    try {
+      await init(true);
+    } finally {
+      lastConnectedWalletInitedDeferred.resolve();
+    }
+
+    await init(false);
   } finally {
-    deferred.resolve();
+    walletsInitedDeferred.resolve();
   }
 });
 
-export const ensureWalletReady = createAsyncThunk(
-  'ensureWalletReady',
-  async (args, { getState }) => {
-    await deferred.promise;
-    const walletState = selectLastConnectedWalletState(getState() as State);
-    if (walletState == null || !walletState.connected) {
-      throw new WalletError('Wallet is not connected.', {
-        code: WalletError.Codes.NotConnected,
-      });
+export const ensureWalletReady = createAsyncThunk<
+  { walletState: ActiveWalletState; wallet: Wallet },
+  { forceConnect?: boolean } | void
+>('ensureWalletReady', async ({ forceConnect = false } = {}, { dispatch, getState }) => {
+  await lastConnectedWalletInitedDeferred.promise;
+
+  if (forceConnect) {
+    const lastConnectedWalletName = selectLastConnectedWalletName(getState() as State);
+    if (lastConnectedWalletName != null) {
+      const walletState = selectLastConnectedWalletState(getState() as State);
+      if (walletState?.installed === true && !walletState.connected) {
+        await dispatch(connectWallet(lastConnectedWalletName)).unwrap();
+      }
     }
-    if (walletState.network == null || !CORRECT_NETWORKS.includes(walletState.network)) {
-      throw new WalletError('Wallet is not in correct network.', {
-        code: WalletError.Codes.IncorrectNetwork,
-        data: {
-          walletName: walletState.name,
-          walletNetwork: CORRECT_NETWORKS.map(networkId =>
-            formatEnum('WalletNetwork', [walletState.name, networkId]),
-          ).join(i18n.t('parts.or') ?? ', '),
-        },
-      });
-    }
-    if (
-      walletState.version != null &&
-      compareVersions(walletState.version, WALLET_INFOS[walletState.name].minimumVersion) < 0
-    ) {
-      throw new WalletError('Wallet version is not compatible.', {
-        code: WalletError.Codes.VerionNotCompatible,
-      });
-    }
-    if (walletState.address == null) {
-      throw new WalletError('No account.', {
-        code: WalletError.Codes.NoAccount,
-      });
-    }
-    return {
-      walletState: walletState as ActiveWalletState,
-      wallet: await getWallet(walletState.name),
-    };
-  },
-);
+  }
+
+  const walletState = selectLastConnectedWalletState(getState() as State);
+  if (walletState == null || !walletState.connected) {
+    throw new WalletError('Wallet is not connected.', {
+      code: WalletError.Codes.NotConnected,
+    });
+  }
+
+  if (walletState.network == null || !CORRECT_NETWORKS.includes(walletState.network)) {
+    throw new WalletError('Wallet is not in correct network.', {
+      code: WalletError.Codes.IncorrectNetwork,
+      data: {
+        walletName: walletState.name,
+        walletNetwork: CORRECT_NETWORKS.map(networkId =>
+          formatEnum('WalletNetwork', [walletState.name, networkId]),
+        ).join(i18n.t('parts.or') ?? ', '),
+      },
+    });
+  }
+
+  if (
+    walletState.version != null &&
+    compareVersions(walletState.version, WALLET_INFOS[walletState.name].minimumVersion) < 0
+  ) {
+    throw new WalletError('Wallet version is not compatible.', {
+      code: WalletError.Codes.VerionNotCompatible,
+    });
+  }
+
+  if (walletState.address == null) {
+    throw new WalletError('No account.', {
+      code: WalletError.Codes.NoAccount,
+    });
+  }
+
+  return {
+    walletState: walletState as ActiveWalletState,
+    wallet: await getWallet(walletState.name),
+  };
+});
 
 export const connectWallet = createAsyncThunk<void, WalletName>(
   'connectWallet',
@@ -108,12 +138,15 @@ export const connectWallet = createAsyncThunk<void, WalletName>(
   },
 );
 
-export const disconnectWallet = createAsyncThunk<void, WalletName>(
+export const disconnectWallet = createAsyncThunk(
   'disconnectWallet',
-  async (walletName, { dispatch }) => {
-    const wallet = await getWallet(walletName);
-    await wallet.disconnect();
-    await dispatch(clearLastConnectedWalletName()).unwrap();
+  async (args, { dispatch, getState }) => {
+    const lastConnectedWalletName = selectLastConnectedWalletName(getState() as State);
+    if (lastConnectedWalletName != null) {
+      const wallet = await getWallet(lastConnectedWalletName);
+      await wallet.disconnect();
+      await dispatch(clearLastConnectedWalletName()).unwrap();
+    }
   },
 );
 

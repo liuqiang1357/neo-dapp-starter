@@ -15,7 +15,7 @@ const NETWORK_MAP: Record<string, NetworkId> = {
 };
 
 class Neon extends BaseWallet {
-  private wcSdk: WcSdk | undefined;
+  private wcSdk: WcSdk | null = null;
 
   constructor() {
     super(WalletName.Neon);

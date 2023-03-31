@@ -26,3 +26,24 @@ export function createAsyncThunk<Returned, ThunkArg = void>(
     ...options,
   });
 }
+
+export function getListTags<Type extends string, Item extends { id: string | number }>(
+  type: Type,
+  items: Item[] | undefined,
+): { type: Type; id: string | number }[];
+
+export function getListTags<Type extends string, Item>(
+  type: Type,
+  items: Item[] | undefined,
+  getId: (item: Item) => string | number,
+): { type: Type; id: string | number }[];
+
+export function getListTags<Type extends string, Item extends { id: string | number }>(
+  type: Type,
+  items: Item[] | undefined,
+  getId?: (item: Item) => string | number,
+): { type: Type; id: string | number }[] {
+  return items
+    ? [{ type, id: 'LIST' }, ...items.map(item => ({ type, id: getId ? getId(item) : item.id }))]
+    : [{ type, id: 'LIST' }];
+}

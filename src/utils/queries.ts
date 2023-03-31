@@ -3,7 +3,8 @@ import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import delay from 'delay';
 import queryString from 'query-string';
-import { Dispatch } from 'store';
+import { Dispatch, State } from 'store';
+import { selectCurrentAuthState } from 'store/slices/auth';
 import { publishError } from 'store/slices/errors';
 import { ensureWalletReady } from 'store/slices/wallets';
 import { BACKEND_URL, FURA_URL, NODE_URL } from './configs';
@@ -15,9 +16,18 @@ export function backendBaseQuery(): BaseQueryFn<AxiosRequestConfig> {
     baseURL: BACKEND_URL,
     paramsSerializer: { serialize: params => queryString.stringify(params) },
   });
-  return async (config, { dispatch }) => {
+  return async (config, { dispatch, getState }) => {
     try {
-      const response = await instance.request(config);
+      const authState = selectCurrentAuthState(getState() as State);
+      const response = await instance.request({
+        ...config,
+        headers: {
+          ...(authState && {
+            Authorization: `Bearer ${authState.token}`,
+          }),
+          ...config.headers,
+        },
+      });
       return { data: response.data };
     } catch (error: any) {
       const response: AxiosResponse | undefined = error.response;
@@ -54,15 +64,27 @@ export function furaBaseQuery(): BaseQueryFn<RequestArguments> {
       if (response.data.error == null) {
         return { data: response.data.result };
       }
-      let code = BackendError.Codes.UnknownError;
-      if (response.data.error.code === -100) {
-        code = BackendError.Codes.NotFound;
+      let finalError;
+      if (typeof response.data.error === 'string') {
+        let code = BackendError.Codes.UnknownError;
+        if (response.data.error === 'not found') {
+          code = BackendError.Codes.NotFound;
+        }
+        finalError = new BackendError(response.data.error, {
+          cause: response.data.error,
+          code,
+        });
+      } else {
+        let code = BackendError.Codes.UnknownError;
+        if (response.data.error.code === -100) {
+          code = BackendError.Codes.NotFound;
+        }
+        finalError = new BackendError(response.data.error.message, {
+          cause: response.data.error,
+          code,
+          data: response.data.error.data,
+        });
       }
-      const finalError = new BackendError(response.data.error.message, {
-        cause: response.data.error,
-        code,
-        data: response.data.error.data,
-      });
       dispatch(publishError(finalError));
       return { error: finalError };
     } catch (error: any) {

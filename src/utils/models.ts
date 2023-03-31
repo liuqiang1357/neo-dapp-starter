@@ -12,3 +12,8 @@ export interface WalletInfo {
 export interface ActiveWalletState extends WalletState {
   address: string;
 }
+
+export interface AuthState {
+  address: string;
+  token: string;
+}

@@ -1705,31 +1705,31 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@neongd/json-rpc@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@neongd/json-rpc/-/json-rpc-1.2.0.tgz#3e531e5e4d1cca6edec3cc55b05b43c32bfdbf33"
-  integrity sha512-rcnkqhq2ahSA+IBDlhgy/w54lvup3Qhfc8A4BgK66A9B+v4K2hTMJPYKWnIEM8NzUaqCtKPnmudfb3dSX2mmuw==
+"@neongd/json-rpc@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@neongd/json-rpc/-/json-rpc-1.2.1.tgz#694f91201b731cb536d91f7f4d2eaf0572422e9c"
+  integrity sha512-hlg5uG2lyflfZxQ8P05Jnzuar9SVgiVUxPHtX9UYH4zQ5trFfp6CJ58TUJ+kUCWynLLjwmzgGwHil7S/zueX+Q==
   dependencies:
     "@types/websocket" "^1.0.5"
     axios "^0.21.1"
     events "^3.3.0"
     websocket "^1.0.34"
 
-"@neongd/neo-dapi@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@neongd/neo-dapi/-/neo-dapi-1.2.0.tgz#3f6edd46829513cf786f3c7a8a8d8503e14437bf"
-  integrity sha512-Qyq5CV0kO6ZB8SjC2Uv1UtTGzzF/E9Bh+jZeFUky72Da9W1OgNDm93h5AcwIKagpw1btXPsh5hQ4U/JymQEPdw==
+"@neongd/neo-dapi@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@neongd/neo-dapi/-/neo-dapi-1.2.1.tgz#f13ec52d5c0e8d31aa94540bfc35bb08d67fce87"
+  integrity sha512-JOnsr6vjJDlRuJcbPourjjodnCPiLb5fJ6J/IuSW6UuiX/8CS6zNfrhZGXveZTzZrE84ysfiF+QVhxR5VfCdqw==
   dependencies:
     "@cityofzion/neon-js" "^5.2.0"
-    "@neongd/json-rpc" "^1.2.0"
-    "@neongd/neo-provider" "^1.2.0"
+    "@neongd/json-rpc" "^1.2.1"
+    "@neongd/neo-provider" "^1.2.1"
 
-"@neongd/neo-provider@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@neongd/neo-provider/-/neo-provider-1.2.0.tgz#41dcae6cb51813a62cb88f711abe9fcb143cb52d"
-  integrity sha512-CxzdXSfAP+GsNuj+ZVIJVjNQBNfHcCd90hGVwIaSUZKqFUwZI9VYNXlxN4A4t5Rvz9slfEGqA1E0zTSqZfyJyw==
+"@neongd/neo-provider@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@neongd/neo-provider/-/neo-provider-1.2.1.tgz#7ca01982f1d2600a99d192a3be624ed1ffd842eb"
+  integrity sha512-tdtbwm2rFOlxNNfcfLhLdGs6iMJKb/+iuPiyt+DAeJDDKExoGGGpZr94CsfZczixO/y38IgkdzNFoAVG2jTcLA==
   dependencies:
-    "@neongd/json-rpc" "^1.2.0"
+    "@neongd/json-rpc" "^1.2.1"
     events "^3.3.0"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":

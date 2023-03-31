@@ -40,10 +40,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   };
 
   const disconnect = async () => {
-    if (!walletState) {
-      return;
-    }
-    await dispatch(disconnectWallet(walletState.name)).unwrap();
+    await dispatch(disconnectWallet()).unwrap();
   };
 
   useEffect(() => {

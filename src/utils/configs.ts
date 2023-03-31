@@ -14,7 +14,9 @@ export const FURA_URL = TARGET_MAINNET
   ? 'https://neofura.ngd.network'
   : 'https://testmagnet.ngd.network';
 
-export const NODE_URL = FURA_URL;
+export const NODE_URL = TARGET_MAINNET
+  ? 'https://n3seed2.ngd.network:10332'
+  : 'https://n3seed2.ngd.network:40332';
 
 export const CORRECT_NETWORKS = [NetworkId.MainNet, NetworkId.TestNet];
 
