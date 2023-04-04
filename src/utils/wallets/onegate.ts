@@ -5,7 +5,13 @@ import { Catch } from 'catchee';
 import { NetworkId, WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
+import {
+  InvokeParams,
+  SignMessageParams,
+  SignMessageResult,
+  SignTransactionParams,
+  SignTransactionResult,
+} from './wallet';
 
 declare const window: Window & {
   OneGate?: Provider;
@@ -44,6 +50,12 @@ class OneGate extends BaseWallet {
       });
       return { message, publicKey, signature };
     }
+  }
+
+  @Catch('handleError')
+  async signTransaction(params: SignTransactionParams): Promise<SignTransactionResult> {
+    const result = await this.getDapi().signTransaction(params);
+    return result;
   }
 
   handleError(error: any): never {
@@ -114,7 +126,7 @@ class OneGate extends BaseWallet {
   // -------- private methods --------
 
   private getDapi() {
-    if (this.dapi != null) {
+    if (this.dapi) {
       return this.dapi;
     }
     throw new Error('neo dapi is not inited');

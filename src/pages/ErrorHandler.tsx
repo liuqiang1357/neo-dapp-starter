@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import { App } from 'antd';
 import delay from 'delay';
 import { remove } from 'lodash-es';
 import { FC, useEffect, useRef } from 'react';
@@ -12,8 +12,6 @@ export const ErrorHandlder: FC = () => {
 
   const error = useSelector(selectLastError);
 
-  const pageVisible = usePageVisibility();
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -21,6 +19,10 @@ export const ErrorHandlder: FC = () => {
       await dispatch(registerErrorHandler()).unwrap();
     })();
   }, [dispatch]);
+
+  const pageVisible = usePageVisibility();
+
+  const { message } = App.useApp();
 
   useEffect(() => {
     setTimeout(async () => {
@@ -44,7 +46,7 @@ export const ErrorHandlder: FC = () => {
         console.error(error);
       }
     });
-  }, [error, pageVisible, dispatch]);
+  }, [dispatch, error, message, pageVisible]);
 
   return <></>;
 };

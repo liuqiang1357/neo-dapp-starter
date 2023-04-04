@@ -5,7 +5,13 @@ import o3dapiNeoN3 from 'o3-dapi-neo3';
 import { NetworkId, WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
+import {
+  InvokeParams,
+  SignMessageParams,
+  SignMessageResult,
+  SignTransactionParams,
+  SignTransactionResult,
+} from './wallet';
 
 const NETWORK_MAP: Record<string, NetworkId> = {
   N3MainNet: NetworkId.MainNet,
@@ -34,6 +40,11 @@ class O3 extends BaseWallet {
     } else {
       throw new Error('Parameter withoutSalt is not supported.');
     }
+  }
+
+  @Catch('handleError')
+  async signTransaction(_params: SignTransactionParams): Promise<SignTransactionResult> {
+    throw new Error('Method not implemented.');
   }
 
   handleError(error: any): never {

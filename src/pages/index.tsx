@@ -1,4 +1,4 @@
-import { ConfigProvider } from 'antd';
+import { App as AntApp, ConfigProvider } from 'antd';
 import { FC, useLayoutEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Home } from 'pages/home';
@@ -14,11 +14,13 @@ export const App: FC = () => {
 
   return (
     <ConfigProvider theme={antdTheme}>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-      <ErrorHandlder />
+      <AntApp className="flex min-h-0 grow flex-col">
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+        <ErrorHandlder />
+      </AntApp>
     </ConfigProvider>
   );
 };

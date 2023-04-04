@@ -1,4 +1,4 @@
-import { Argument, Signer } from '@neongd/neo-dapi';
+import { Argument, Attribute, Invocation, Signer } from '@neongd/neo-dapi';
 import { NetworkId, WalletName } from 'utils/enums';
 
 export interface WalletState {
@@ -29,6 +29,23 @@ export interface SignMessageResult {
   signature: string;
 }
 
+export interface SignTransactionParams {
+  version: number;
+  nonce: number;
+  systemFee: string;
+  networkFee: string;
+  validUntilBlock: number;
+  script: string;
+  invocations?: Invocation[];
+  attributes?: Attribute[];
+  signers?: Signer[];
+}
+
+export interface SignTransactionResult {
+  signature: string;
+  publicKey: string;
+}
+
 export interface Wallet {
   onWalletStateChange?: (state: WalletState) => void;
 
@@ -38,6 +55,7 @@ export interface Wallet {
 
   invoke(params: InvokeParams): Promise<string>;
   signMessage(params: SignMessageParams): Promise<SignMessageResult>;
+  signTransaction(params: SignTransactionParams): Promise<SignTransactionResult>;
 
   handleError(error: any): never;
 }

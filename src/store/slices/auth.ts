@@ -23,7 +23,7 @@ export const authSlice = createSlice({
 
 export const { setAuthState, setAuthStateLoaded } = authSlice.actions;
 
-export const loadAuthState = createAsyncThunk('loadAuthState', async (args, { dispatch }) => {
+export const loadAuthState = createAsyncThunk('loadAuthState', async (arg, { dispatch }) => {
   const data = localStorage.getItem(CURRENT_AUTH_STATE);
   if (data != null) {
     const authState = JSON.parse(data);
@@ -40,7 +40,7 @@ export const saveAuthState = createAsyncThunk<void, AuthState>(
   },
 );
 
-export const clearAuthState = createAsyncThunk('clearAuthState', async (args, { dispatch }) => {
+export const clearAuthState = createAsyncThunk('clearAuthState', async (arg, { dispatch }) => {
   dispatch(setAuthState(null));
   localStorage.removeItem(CURRENT_AUTH_STATE);
 });

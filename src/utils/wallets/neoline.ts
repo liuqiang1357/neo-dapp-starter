@@ -1,9 +1,17 @@
+import { wallet as neonWallet } from '@cityofzion/neon-js';
 import { Catch } from 'catchee';
 import { windowReady } from 'html-ready';
 import { NetworkId, WalletName } from 'utils/enums';
+import { TARGET_MAINNET } from 'utils/env';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
+import {
+  InvokeParams,
+  SignMessageParams,
+  SignMessageResult,
+  SignTransactionParams,
+  SignTransactionResult,
+} from './wallet';
 
 const NEOLINE_WAS_CONNECTED = 'NEOLINE_WAS_CONNECTED';
 
@@ -42,6 +50,30 @@ class NeoLine extends BaseWallet {
       });
       return { message, publicKey, signature };
     }
+  }
+
+  @Catch('handleError')
+  async signTransaction(params: SignTransactionParams): Promise<SignTransactionResult> {
+    const result = await this.neoDapiN3.signTransaction({
+      transaction: {
+        version: params.version,
+        nonce: params.nonce,
+        systemFee: params.systemFee,
+        networkFee: params.networkFee,
+        validUntilBlock: params.validUntilBlock,
+        attributes: params.attributes,
+        signers: params.signers,
+        script: params.script,
+      },
+      magicNumber: TARGET_MAINNET ? 860833102 : 894710606,
+    });
+    const signatures = neonWallet.getSignaturesFromInvocationScript(
+      result.witnesses[0].invocationScript,
+    );
+    const publicKey = neonWallet.getPublicKeyFromVerificationScript(
+      result.witnesses[0].verificationScript,
+    );
+    return { signature: signatures[0], publicKey };
   }
 
   handleError(error: any): never {

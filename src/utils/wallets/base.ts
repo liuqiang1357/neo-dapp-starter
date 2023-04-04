@@ -1,5 +1,13 @@
 import { WalletName } from 'utils/enums';
-import { InvokeParams, SignMessageParams, SignMessageResult, Wallet, WalletState } from './wallet';
+import {
+  InvokeParams,
+  SignMessageParams,
+  SignMessageResult,
+  SignTransactionParams,
+  SignTransactionResult,
+  Wallet,
+  WalletState,
+} from './wallet';
 
 export type QueryWalletStateResult = Pick<WalletState, 'address' | 'network' | 'version'>;
 
@@ -56,6 +64,8 @@ export abstract class BaseWallet implements Wallet {
   abstract invoke(params: InvokeParams): Promise<string>;
 
   abstract signMessage(params: SignMessageParams): Promise<SignMessageResult>;
+
+  abstract signTransaction(params: SignTransactionParams): Promise<SignTransactionResult>;
 
   abstract handleError(error: any): never;
 

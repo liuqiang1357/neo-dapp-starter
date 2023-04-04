@@ -38,7 +38,7 @@ let initWalletsCalled = false;
 const walletsInitedDeferred = pDefer();
 const lastConnectedWalletInitedDeferred = pDefer();
 
-export const initWallets = createAsyncThunk('initWallets', async (args, { dispatch, getState }) => {
+export const initWallets = createAsyncThunk('initWallets', async (arg, { dispatch, getState }) => {
   try {
     if (initWalletsCalled) {
       return walletsInitedDeferred.promise;
@@ -75,8 +75,8 @@ export const initWallets = createAsyncThunk('initWallets', async (args, { dispat
 
 export const ensureWalletReady = createAsyncThunk<
   { walletState: ActiveWalletState; wallet: Wallet },
-  { forceConnect?: boolean } | void
->('ensureWalletReady', async ({ forceConnect = false } = {}, { dispatch, getState }) => {
+  { address?: string; forceConnect?: boolean } | undefined
+>('ensureWalletReady', async ({ address, forceConnect = false } = {}, { dispatch, getState }) => {
   await lastConnectedWalletInitedDeferred.promise;
 
   if (forceConnect) {
@@ -113,13 +113,19 @@ export const ensureWalletReady = createAsyncThunk<
     compareVersions(walletState.version, WALLET_INFOS[walletState.name].minimumVersion) < 0
   ) {
     throw new WalletError('Wallet version is not compatible.', {
-      code: WalletError.Codes.VerionNotCompatible,
+      code: WalletError.Codes.IncompatibleVersion,
     });
   }
 
   if (walletState.address == null) {
-    throw new WalletError('No account.', {
+    throw new WalletError('Wallet does not have an account.', {
       code: WalletError.Codes.NoAccount,
+    });
+  }
+
+  if (address != null && walletState.address !== address) {
+    throw new WalletError('Wallet current account does not match the request.', {
+      code: WalletError.Codes.MismatchedAccount,
     });
   }
 
@@ -140,7 +146,7 @@ export const connectWallet = createAsyncThunk<void, WalletName>(
 
 export const disconnectWallet = createAsyncThunk(
   'disconnectWallet',
-  async (args, { dispatch, getState }) => {
+  async (arg, { dispatch, getState }) => {
     const lastConnectedWalletName = selectLastConnectedWalletName(getState() as State);
     if (lastConnectedWalletName != null) {
       const wallet = await getWallet(lastConnectedWalletName);
@@ -152,7 +158,7 @@ export const disconnectWallet = createAsyncThunk(
 
 export const loadLastConnectedWalletName = createAsyncThunk(
   'loadLastConnectedWalletName',
-  async (args, { dispatch }) => {
+  async (arg, { dispatch }) => {
     const data = localStorage.getItem(LAST_CONNECTED_WALLET_NAME);
     if (data != null) {
       const walletName = parseEnum(WalletName, data);
@@ -173,7 +179,7 @@ export const saveLastConnectedWalletName = createAsyncThunk<void, WalletName>(
 
 export const clearLastConnectedWalletName = createAsyncThunk(
   'clearLastConnectedWalletName',
-  async (args, { dispatch }) => {
+  async (arg, { dispatch }) => {
     dispatch(setLastConnectedWalletName(null));
     localStorage.removeItem(LAST_CONNECTED_WALLET_NAME);
   },

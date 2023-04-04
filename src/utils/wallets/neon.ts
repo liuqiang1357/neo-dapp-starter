@@ -7,7 +7,13 @@ import { NetworkId, WalletName } from 'utils/enums';
 import { TARGET_MAINNET } from 'utils/env';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
-import { InvokeParams, SignMessageParams, SignMessageResult } from './wallet';
+import {
+  InvokeParams,
+  SignMessageParams,
+  SignMessageResult,
+  SignTransactionParams,
+  SignTransactionResult,
+} from './wallet';
 
 const NETWORK_MAP: Record<string, NetworkId> = {
   'neo3:mainnet': NetworkId.MainNet,
@@ -59,6 +65,11 @@ class Neon extends BaseWallet {
     }
   }
 
+  @Catch('handleError')
+  async signTransaction(_params: SignTransactionParams): Promise<SignTransactionResult> {
+    throw new Error('Method not implemented.');
+  }
+
   handleError(error: any): never {
     const code = WalletError.Codes.UnknownError;
     // TODO: convert errors
@@ -107,7 +118,7 @@ class Neon extends BaseWallet {
   // -------- private methods --------
 
   private getWcSdk() {
-    if (this.wcSdk != null) {
+    if (this.wcSdk) {
       return this.wcSdk;
     }
     throw new Error('wc sdk is not inited');
