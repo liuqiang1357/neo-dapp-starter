@@ -4,17 +4,11 @@ import BigNumber from 'bignumber.js';
 
 export function integerToDecimal(integer: string, unit: number): string {
   const bn = new BigNumber(integer);
-  if (bn.isNaN()) {
-    throw new Error('Invalid number');
-  }
-  return bn.shiftedBy(-unit).toFixed();
+  return bn.dp(0, BigNumber.ROUND_DOWN).shiftedBy(-unit).toFixed();
 }
 
 export function decimalToInteger(decimal: string, unit: number): string {
   const bn = new BigNumber(decimal);
-  if (bn.isNaN()) {
-    throw new Error('Invalid number');
-  }
   return bn.shiftedBy(unit).dp(0, BigNumber.ROUND_DOWN).toFixed();
 }
 

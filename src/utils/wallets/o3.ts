@@ -13,7 +13,7 @@ import {
   SignTransactionResult,
 } from './wallet';
 
-const NETWORK_MAP: Record<string, NetworkId> = {
+const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   N3MainNet: NetworkId.MainNet,
   N3TestNet: NetworkId.TestNet,
 };
@@ -140,7 +140,7 @@ class O3 extends BaseWallet {
     const version = (await this.neoDapi.getProvider()).version;
     return {
       address,
-      network: NETWORK_MAP[network],
+      network: NETWORK_IDS[network] ?? null,
       version,
     };
   }

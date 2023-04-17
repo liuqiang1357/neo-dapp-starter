@@ -15,7 +15,7 @@ import {
   SignTransactionResult,
 } from './wallet';
 
-const NETWORK_MAP: Record<string, NetworkId> = {
+const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   'neo3:mainnet': NetworkId.MainNet,
   'neo3:testnet': NetworkId.TestNet,
 };
@@ -110,7 +110,7 @@ class Neon extends BaseWallet {
     const address = this.getWcSdk().getAccountAddress();
     return {
       address: address,
-      network: network != null ? NETWORK_MAP[network] : null,
+      network: network != null ? NETWORK_IDS[network] ?? null : null,
       version: null,
     };
   }

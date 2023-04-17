@@ -9,6 +9,7 @@
   "files.associations": { "*.css": "tailwindcss" },
   "javascript.preferences.quoteStyle": "double",
   "typescript.preferences.quoteStyle": "double",
+  "typescript.tsdk": "./node_modules/typescript/lib",
 
   // Extensions Settings
   "path-autocomplete.enableFolderTrailingSlash": false,

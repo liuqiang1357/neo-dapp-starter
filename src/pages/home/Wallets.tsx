@@ -17,7 +17,7 @@ import { useSelector, useStore } from 'utils/hooks/redux';
 import { tm } from 'utils/tailwind';
 import disconnectImage from './_images/disconnect.svg';
 
-export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
+export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
   const walletsPopoverOpen = useSelector(selectWalletsPopoverOpen);
 
   const walletState = useSelector(selectActiveWalletState);
@@ -50,7 +50,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...props }) => {
   }, [dispatch]);
 
   return (
-    <div className={tm('inline-block', className)} {...props}>
+    <div className={tm('inline-block', className)} {...rest}>
       {walletState ? (
         <div className="group relative">
           <Button className="group-hover:opacity-0" type="primary">

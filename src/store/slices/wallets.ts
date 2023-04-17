@@ -18,7 +18,7 @@ const LAST_CONNECTED_WALLET_NAME = 'LAST_CONNECTED_WALLET_NAME';
 export const walletsSlice = createSlice({
   name: 'walletsSlice',
   initialState: {
-    walletStates: {} as Record<WalletName, WalletState>,
+    walletStates: {} as Partial<Record<WalletName, WalletState>>,
     lastConnectedWalletName: null as WalletName | null,
   },
   reducers: {
@@ -185,7 +185,7 @@ export const clearLastConnectedWalletName = createAsyncThunk(
   },
 );
 
-export function selectWalletStates(state: State): Record<WalletName, WalletState> {
+export function selectWalletStates(state: State): Partial<Record<WalletName, WalletState>> {
   return state.walletsSlice.walletStates;
 }
 
@@ -194,7 +194,7 @@ export function selectWalletState(
   { walletName }: { walletName: WalletName },
 ): WalletState | null {
   const walletStates = selectWalletStates(state);
-  return walletStates[walletName];
+  return walletStates[walletName] ?? null;
 }
 
 export function selectLastConnectedWalletName(state: State): WalletName | null {

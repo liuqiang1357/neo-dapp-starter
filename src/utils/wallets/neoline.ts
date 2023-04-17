@@ -15,7 +15,7 @@ import {
 
 const NEOLINE_WAS_CONNECTED = 'NEOLINE_WAS_CONNECTED';
 
-const NETWORK_MAP: Record<string, NetworkId> = {
+const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   N3MainNet: NetworkId.MainNet,
   N3TestNet: NetworkId.TestNet,
 };
@@ -155,7 +155,7 @@ class NeoLine extends BaseWallet {
     const version = (await this.neoDapi.getProvider()).version;
     return {
       address,
-      network: NETWORK_MAP[network],
+      network: NETWORK_IDS[network] ?? null,
       version,
     };
   }

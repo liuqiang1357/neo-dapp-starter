@@ -8,8 +8,9 @@
     "build:testnet": "cross-env GENERATE_SOURCEMAP=false REACT_APP_TARGET=testnet craco build",
     "build": "cross-env GENERATE_SOURCEMAP=false REACT_APP_TARGET=mainnet craco build",
     "test": "craco test",
-    "lint": "eslint . --fix",
-    "format": "prettier . --write"
+    "lint": "eslint --fix .",
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@cityofzion/neon-js": "^5.3.0",
@@ -47,8 +48,10 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "html-ready": "^2.1.0",
+    "husky": "^8.0.3",
     "i18next": "^22.4.11",
     "i18next-browser-languagedetector": "^7.0.1",
+    "lint-staged": "^13.2.2",
     "lodash-es": "^4.17.21",
     "o3-dapi-core": "^0.3.13",
     "o3-dapi-neo": "^0.6.1",
@@ -82,6 +85,12 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "lint-staged": {
+    "*.(js|ts)?(x)": [
+      "prettier --write",
+      "eslint --fix"
     ]
   }
 }

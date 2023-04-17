@@ -43,7 +43,7 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
       preventScrollReset,
       relative,
       onClick,
-      ...props
+      ...rest
     },
     ref,
   ) => {
@@ -116,7 +116,7 @@ export const Button = forwardRef<ComponentRef<typeof AntButton>, Props>(
           loading={loading}
           disabled={finalDisabled}
           onClick={handleClick}
-          {...props}
+          {...rest}
         />
       </ConfigProvider>
     );

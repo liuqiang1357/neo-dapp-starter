@@ -19,7 +19,7 @@ declare const window: Window & {
 
 const ONEGATE_WAS_CONNECTED = 'ONEGATE_WAS_CONNECTED';
 
-const NETWORK_MAP: Record<string, NetworkId> = {
+const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   MainNet: NetworkId.MainNet,
   TestNet: NetworkId.TestNet,
 };
@@ -118,7 +118,7 @@ class OneGate extends BaseWallet {
     const version = (await this.getDapi().getProvider()).version;
     return {
       address,
-      network: NETWORK_MAP[network],
+      network: NETWORK_IDS[network] ?? null,
       version,
     };
   }

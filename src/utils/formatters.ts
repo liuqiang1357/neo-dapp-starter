@@ -26,7 +26,7 @@ export function formatEnum(
 }
 
 export interface FormatNumberOptions {
-  decimals?: number | string;
+  decimals?: number;
   roundingMode?: BigNumber.RoundingMode;
   prefix?: string;
   suffix?: string;
@@ -60,7 +60,7 @@ export function formatNumber(
     suffix: (asPercentage ? '%' : '') + (suffix ?? ''),
   };
   if (decimals != null) {
-    return bn.dp(Number(decimals), roundingMode).toFormat(options);
+    return bn.dp(decimals, roundingMode).toFormat(options);
   }
   return bn.toFormat(options);
 }
