@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import 'i18n';
 import 'styles/index.css';
-import { App } from 'pages';
+import { App } from 'app';
 import { store } from 'store';
 import { IN_PRODUCTION } from 'utils/env';
 import { reportWebVitals } from './reportWebVitals';

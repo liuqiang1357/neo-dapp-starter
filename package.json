@@ -8,7 +8,7 @@
     "build:testnet": "cross-env GENERATE_SOURCEMAP=false REACT_APP_TARGET=testnet craco build",
     "build": "cross-env GENERATE_SOURCEMAP=false REACT_APP_TARGET=mainnet craco build",
     "test": "craco test",
-    "check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "lint": "eslint --fix .",
     "prepare": "husky install"

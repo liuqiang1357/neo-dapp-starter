@@ -1,7 +1,7 @@
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { Input } from 'antd';
 import { FC, useState } from 'react';
-import { Button } from 'pages/_shared/Button';
+import { Button } from 'app/_shared/Button';
 import { useNep17TransferMutation } from 'store/apis/invoke';
 import { useGetNep17RawBalanceQuery } from 'store/apis/invokeRead';
 import { selectActiveWalletState } from 'store/slices/wallets';
