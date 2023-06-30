@@ -8,8 +8,8 @@ import { WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
 import { formatEnum } from 'utils/formatters';
 import { createAsyncThunk } from 'utils/misc';
-import { ActiveWalletState } from 'utils/models';
 import { parseEnum } from 'utils/parsers';
+import { ActiveWalletState } from 'utils/types';
 import { getWallet } from 'utils/wallets';
 import { Wallet, WalletState } from 'utils/wallets/wallet';
 

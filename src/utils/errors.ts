@@ -41,7 +41,7 @@ export class CancelledError extends BaseError {
   }
 }
 
-export enum WalletErrorCodes {
+enum WalletErrorCodes {
   UnknownError = 'UnknownError',
   NotInstalled = 'NotInstalled',
   NotConnected = 'NotConnected',
@@ -80,7 +80,7 @@ export class WalletError extends BaseError {
   }
 }
 
-export enum BackendErrorCodes {
+enum BackendErrorCodes {
   UnknownError = 'UnknownError',
   NetworkError = 'NetworkError',
   BadRequest = 'BadRequest',

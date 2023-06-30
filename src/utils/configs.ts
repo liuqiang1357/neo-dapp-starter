@@ -4,7 +4,7 @@ import o3 from 'assets/images/wallets/o3.png';
 import onegate from 'assets/images/wallets/onegate.png';
 import { NetworkId, WalletName } from './enums';
 import { TARGET_MAINNET } from './env';
-import { WalletInfo } from './models';
+import { WalletInfo } from './types';
 
 export const BACKEND_URL = TARGET_MAINNET
   ? 'https://localhost:8000' // TODO

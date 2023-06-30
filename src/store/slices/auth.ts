@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { State } from 'store';
 import { createAsyncThunk } from 'utils/misc';
-import { AuthState } from 'utils/models';
+import { AuthState } from 'utils/types';
 
 const CURRENT_AUTH_STATE = 'CURRENT_AUTH_STATE';
 
