@@ -1,6 +1,7 @@
 import { Popover } from 'antd';
 import { ComponentProps, FC, useEffect } from 'react';
 import { Button } from 'app/_shared/Button';
+import { useSelector, useStore } from 'hooks/redux';
 import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
 import {
   connectWallet,
@@ -13,7 +14,6 @@ import {
 import { WALLET_INFOS } from 'utils/configs';
 import { WalletName } from 'utils/enums';
 import { formatLongText } from 'utils/formatters';
-import { useSelector, useStore } from 'utils/hooks/redux';
 import { tm } from 'utils/tailwind';
 import disconnectImage from './_images/disconnect.svg';
 

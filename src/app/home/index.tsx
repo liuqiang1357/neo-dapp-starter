@@ -2,10 +2,10 @@ import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { Input } from 'antd';
 import { FC, useState } from 'react';
 import { Button } from 'app/_shared/Button';
+import { useSelector } from 'hooks/redux';
 import { useNep17TransferMutation } from 'store/apis/invoke';
 import { useGetNep17RawBalanceQuery } from 'store/apis/invokeRead';
 import { selectActiveWalletState } from 'store/slices/wallets';
-import { useSelector } from 'utils/hooks/redux';
 import { Wallets } from './Wallets';
 
 export const Home: FC = () => {
