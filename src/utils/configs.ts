@@ -3,18 +3,18 @@ import neon from 'assets/images/wallets/neon.svg';
 import o3 from 'assets/images/wallets/o3.png';
 import onegate from 'assets/images/wallets/onegate.png';
 import { NetworkId, WalletName } from './enums';
-import { TARGET_MAINNET } from './env';
+import { TARGET_PRODUCTION } from './env';
 import { WalletInfo } from './types';
 
-export const BACKEND_URL = TARGET_MAINNET
+export const BACKEND_URL = TARGET_PRODUCTION
   ? 'https://localhost:8000' // TODO
   : 'https://localhost:8000'; // TODO
 
-export const FURA_URL = TARGET_MAINNET
+export const FURA_URL = TARGET_PRODUCTION
   ? 'https://neofura.ngd.network'
   : 'https://testmagnet.ngd.network';
 
-export const NODE_URL = TARGET_MAINNET
+export const NODE_URL = TARGET_PRODUCTION
   ? 'https://n3seed2.ngd.network:10332'
   : 'https://n3seed2.ngd.network:40332';
 

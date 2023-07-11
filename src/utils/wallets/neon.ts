@@ -4,7 +4,7 @@ import SignClient from '@walletconnect/sign-client';
 import { Catch } from 'catchee';
 import { NEON_SIGN_CLIENT_OPTIONS } from 'utils/configs';
 import { NetworkId, WalletName } from 'utils/enums';
-import { TARGET_MAINNET } from 'utils/env';
+import { TARGET_PRODUCTION } from 'utils/env';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
 import {
@@ -94,7 +94,7 @@ class Neon extends BaseWallet {
       localStorage.removeItem('walletconnect');
     }
     if (!this.getWcSdk().isConnected()) {
-      await this.getWcSdk().connect(TARGET_MAINNET ? 'neo3:mainnet' : 'neo3:testnet');
+      await this.getWcSdk().connect(TARGET_PRODUCTION ? 'neo3:mainnet' : 'neo3:testnet');
     }
   }
 

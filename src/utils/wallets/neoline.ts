@@ -2,7 +2,7 @@ import { wallet as neonWallet } from '@cityofzion/neon-js';
 import { Catch } from 'catchee';
 import { windowReady } from 'html-ready';
 import { NetworkId, WalletName } from 'utils/enums';
-import { TARGET_MAINNET } from 'utils/env';
+import { TARGET_PRODUCTION } from 'utils/env';
 import { WalletError } from 'utils/errors';
 import { BaseWallet, QueryWalletStateResult } from './base';
 import {
@@ -65,7 +65,7 @@ class NeoLine extends BaseWallet {
         signers: params.signers,
         script: params.script,
       },
-      magicNumber: TARGET_MAINNET ? 860833102 : 894710606,
+      magicNumber: TARGET_PRODUCTION ? 860833102 : 894710606,
     });
     const signatures = neonWallet.getSignaturesFromInvocationScript(
       result.witnesses[0].invocationScript,
