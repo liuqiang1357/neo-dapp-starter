@@ -2,59 +2,58 @@ import neoline from 'assets/images/wallets/neoline.png';
 import neon from 'assets/images/wallets/neon.svg';
 import o3 from 'assets/images/wallets/o3.png';
 import onegate from 'assets/images/wallets/onegate.png';
-import { NetworkId, WalletName } from './enums';
-import { TARGET_PRODUCTION } from './env';
-import { WalletInfo } from './types';
+import { NetworkConfig, NetworkId, WalletConfig, WalletId } from './models';
 
-export const BACKEND_URL = TARGET_PRODUCTION
-  ? 'https://localhost:8000' // TODO
-  : 'https://localhost:8000'; // TODO
+// Network configs
+export const NETWORK_CONFIGS: Record<NetworkId, NetworkConfig> = {
+  [NetworkId.MainNet]: {
+    name: 'MainNet',
+    nodeUrl: 'https://n3seed2.ngd.network:10332',
+    furaUrl: 'https://neofura.ngd.network',
+  },
+  [NetworkId.TestNet]: {
+    name: 'TestNet',
+    nodeUrl: 'https://n3seed2.ngd.network:40332',
+    furaUrl: 'https://testmagnet.ngd.network',
+  },
+};
 
-export const FURA_URL = TARGET_PRODUCTION
-  ? 'https://neofura.ngd.network'
-  : 'https://testmagnet.ngd.network';
+// Supported networks
+export const SUPPORTED_NETWORK_IDS = [NetworkId.MainNet, NetworkId.TestNet];
 
-export const NODE_URL = TARGET_PRODUCTION
-  ? 'https://n3seed2.ngd.network:10332'
-  : 'https://n3seed2.ngd.network:40332';
-
-export const CORRECT_NETWORKS = [NetworkId.MainNet, NetworkId.TestNet];
-
-export const WALLET_INFOS: Record<WalletName, WalletInfo> = {
-  [WalletName.OneGate]: {
-    name: WalletName.OneGate,
-    image: onegate,
+// Wallet configs
+export const WALLET_CONFIGS: Record<WalletId, WalletConfig> = {
+  [WalletId.OneGate]: {
+    name: WalletId.OneGate,
+    icon: onegate,
     downloadUrl: 'https://onegate.space',
     minimumVersion: '0.0.0',
   },
-  [WalletName.NeoLine]: {
-    name: WalletName.NeoLine,
-    image: neoline,
+  [WalletId.NeoLine]: {
+    name: WalletId.NeoLine,
+    icon: neoline,
     downloadUrl:
       'https://chrome.google.com/webstore/detail/neoline/cphhlgmgameodnhkjdmkpanlelnlohao',
     minimumVersion: '0.0.0',
   },
-  [WalletName.O3]: {
-    name: WalletName.O3,
-    image: o3,
+  [WalletId.O3]: {
+    name: WalletId.O3,
+    icon: o3,
     downloadUrl: 'https://o3.network/#download',
     minimumVersion: '0.0.0',
   },
-  [WalletName.Neon]: {
-    name: WalletName.Neon,
-    image: neon,
+  [WalletId.Neon]: {
+    name: WalletId.Neon,
+    icon: neon,
     downloadUrl: 'https://neonwallet.com',
     minimumVersion: '0.0.0',
   },
 };
 
-export const NEON_SIGN_CLIENT_OPTIONS = {
-  projectId: '6fc6f515daaa4b001616766bc028bffa', // TODO
-  relayUrl: 'wss://relay.walletconnect.com',
-  metadata: {
-    name: 'React App', // TODO
-    description: 'Web site created using create-react-app', // TODO
-    url: 'http://localhost:3000', // TODO
-    icons: ['http://localhost:3000/favicon.ico'], // TODO
-  },
-};
+// Supported wallets
+export const SUPPORTED_WALLET_IDS = [
+  WalletId.OneGate,
+  WalletId.NeoLine,
+  WalletId.O3,
+  WalletId.Neon,
+];

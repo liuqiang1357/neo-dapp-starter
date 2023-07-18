@@ -1,49 +1,20 @@
 {
-  "messages": {
-    "copied": "\"{{text}}\" has been copied."
-  },
-  "parts": {
-    "or": " or ",
-    "and": " and "
-  },
-  "enums": {
-    "WalletNetwork": {
-      "OneGate": {
-        "MainNet": "MainNet",
-        "TestNet": "TestNet"
-      },
-      "NeoLine": {
-        "MainNet": "N3 MainNet",
-        "TestNet": "N3 TestNet"
-      },
-      "O3": {
-        "MainNet": "N3 MainNet",
-        "TestNet": "N3 TestNet"
-      },
-      "Neon": {
-        "MainNet": "3.x MainNet",
-        "TestNet": "3.x TestNet"
-      }
-    }
-  },
   "errors": {
     "WalletError": {
-      "UnknownError": "Unknown wallet error.",
       "NotInstalled": "Wallet is not installed.",
       "NotConnected": "Wallet is not connected.",
-      "IncorrectNetwork": "Please switch to {{walletNetwork}} on {{walletName}} wallet.",
+      "CommunicateFailed": "Communicate failed with wallet.",
+      "IncorrectNetwork": "Please switch to correct network.",
       "IncompatibleVersion": "Wallet version is not compatible, please upgrade to the latest version.",
       "NoAccount": "Wallet does not have an account.",
-      "MismatchedAccount": "Wallet current account does not match the request.",
       "UserRejected": "Request is rejected by user.",
       "MalformedInput": "Malformed input.",
       "InsufficientFunds": "Insufficient funds.",
-      "CommunicateFailed": "Communicate failed with wallet.",
       "RemoteRpcError": "Communicate failed with wallet server.",
-      "UnsupportedNetwork": "Unsupported network."
+      "UnsupportedNetwork": "Unsupported network.",
+      "FailedToSwitchNetwork": "Switching network failed, please operate in the wallet."
     },
     "BackendError": {
-      "UnknownError": "Unknown request error.",
       "NetworkError": "Network error.",
       "InternalServiceError": "Internal server error.",
       "NotFound": "Not found."

@@ -8,11 +8,12 @@ const foldersUnderSrc = fs
 module.exports = {
   root: true,
   extends: ['react-app', 'eslint:recommended', 'plugin:prettier/recommended'],
-  plugins: ['import'],
+  plugins: ['import', '@tanstack/query'],
   rules: {
     eqeqeq: ['error', 'always', { null: 'never' }],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'sort-imports': ['error', { ignoreDeclarationSort: true, ignoreCase: true }],
+    '@tanstack/query/exhaustive-deps': 'error',
     'import/order': [
       'error',
       {
@@ -40,6 +41,12 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
         '@typescript-eslint/strict-boolean-expressions': ['warn'],
+      },
+    },
+    {
+      files: ['**/hooks/*.ts?(x)'],
+      rules: {
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
       },
     },
   ],

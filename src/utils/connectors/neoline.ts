@@ -1,23 +1,28 @@
 import { wallet as neonWallet } from '@cityofzion/neon-js';
 import { Catch } from 'catchee';
 import { windowReady } from 'html-ready';
-import { NetworkId, WalletName } from 'utils/enums';
-import { TARGET_PRODUCTION } from 'utils/env';
 import { WalletError } from 'utils/errors';
-import { BaseWallet, QueryWalletStateResult } from './base';
+import { NetworkId } from 'utils/models';
 import {
+  Connector,
+  ConnectorData,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
   SignTransactionParams,
   SignTransactionResult,
-} from './wallet';
+} from './types';
 
-const NEOLINE_WAS_CONNECTED = 'NEOLINE_WAS_CONNECTED';
+const NEOLINE_CONNECTED = 'NEOLINE_CONNECTED';
 
 const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   N3MainNet: NetworkId.MainNet,
   N3TestNet: NetworkId.TestNet,
+};
+
+const MAGIC_NUMBERS: Record<NetworkId, number> = {
+  [NetworkId.MainNet]: 860833102,
+  [NetworkId.TestNet]: 894710606,
 };
 
 declare const window: Window & {
@@ -25,12 +30,53 @@ declare const window: Window & {
   NEOLineN3: any;
 };
 
-class NeoLine extends BaseWallet {
+export class NeoLineConnector extends Connector {
   private neoDapi: any;
   private neoDapiN3: any;
 
-  constructor() {
-    super(WalletName.NeoLine);
+  async init(): Promise<void> {
+    const ready = await new Promise<boolean>(resolve => {
+      const checkReady = () => {
+        if (window.NEOLine != null && window.NEOLineN3 != null) {
+          resolve(true);
+        }
+      };
+      window.addEventListener('NEOLine.NEO.EVENT.READY', checkReady);
+      window.addEventListener('NEOLine.N3.EVENT.READY', checkReady);
+      checkReady();
+      windowReady.then(() => setTimeout(() => resolve(false), 3000));
+    });
+
+    if (ready) {
+      this.neoDapi = new window.NEOLine.Init();
+      this.neoDapiN3 = new window.NEOLineN3.Init();
+    }
+  }
+
+  async isReady(): Promise<boolean> {
+    return this.neoDapi != null && this.neoDapiN3 != null;
+  }
+
+  async isAuthorized(): Promise<boolean> {
+    return sessionStorage.getItem(NEOLINE_CONNECTED) === 'true';
+  }
+
+  @Catch('handleError')
+  async connect(): Promise<ConnectorData> {
+    await this.neoDapiN3.getAccount();
+    sessionStorage.setItem(NEOLINE_CONNECTED, 'true');
+
+    this.neoDapi.addEventListener(this.neoDapi.EVENT.ACCOUNT_CHANGED, this.updateData);
+    this.neoDapi.addEventListener(this.neoDapi.EVENT.NETWORK_CHANGED, this.updateData);
+
+    return this.queryData();
+  }
+
+  async disconnect(): Promise<void> {
+    this.neoDapi.removeEventListener(this.neoDapi.EVENT.ACCOUNT_CHANGED, this.updateData);
+    this.neoDapi.removeEventListener(this.neoDapi.EVENT.NETWORK_CHANGED, this.updateData);
+
+    sessionStorage.removeItem(NEOLINE_CONNECTED);
   }
 
   @Catch('handleError')
@@ -65,7 +111,7 @@ class NeoLine extends BaseWallet {
         signers: params.signers,
         script: params.script,
       },
-      magicNumber: TARGET_PRODUCTION ? 860833102 : 894710606,
+      magicNumber: MAGIC_NUMBERS[params.network ?? NetworkId.MainNet],
     });
     const signatures = neonWallet.getSignaturesFromInvocationScript(
       result.witnesses[0].invocationScript,
@@ -76,7 +122,24 @@ class NeoLine extends BaseWallet {
     return { signature: signatures[0], publicKey };
   }
 
-  handleError(error: any): never {
+  @Catch('handleError')
+  protected async queryData(): Promise<ConnectorData> {
+    const network = (await this.neoDapi.getNetworks()).defaultNetwork;
+    let address;
+    if (network === 'MainNet' || network === 'TestNet') {
+      address = (await this.neoDapi.getAccount()).address;
+    } else {
+      address = (await this.neoDapiN3.getAccount()).address;
+    }
+    const version = (await this.neoDapi.getProvider()).version;
+    return {
+      address,
+      networkId: NETWORK_IDS[network] ?? null,
+      version,
+    };
+  }
+
+  private handleError(error: any): never {
     let code = WalletError.Codes.UnknownError;
     switch (error.type) {
       case 'NO_PROVIDER':
@@ -103,62 +166,4 @@ class NeoLine extends BaseWallet {
     }
     throw new WalletError(error.message ?? error.description, { cause: error, code });
   }
-
-  // -------- protected methods --------
-
-  protected async internalInit(): Promise<boolean> {
-    const installed = await new Promise<boolean>(resolve => {
-      const checkReady = () => {
-        if (window.NEOLine != null && window.NEOLineN3 != null) {
-          resolve(true);
-        }
-      };
-      window.addEventListener('NEOLine.NEO.EVENT.READY', checkReady);
-      window.addEventListener('NEOLine.N3.EVENT.READY', checkReady);
-      checkReady();
-      windowReady.then(() => setTimeout(() => resolve(false), 3000));
-    });
-
-    if (installed) {
-      this.neoDapi = new window.NEOLine.Init();
-      this.neoDapiN3 = new window.NEOLineN3.Init();
-
-      this.neoDapi.addEventListener(this.neoDapi.EVENT.ACCOUNT_CHANGED, this.updateWalletState);
-      this.neoDapi.addEventListener(this.neoDapi.EVENT.NETWORK_CHANGED, this.updateWalletState);
-    }
-    return installed;
-  }
-
-  protected canRestoreConnection(): boolean {
-    return sessionStorage.getItem(NEOLINE_WAS_CONNECTED) === 'true';
-  }
-
-  @Catch('handleError')
-  protected async internalConnect(): Promise<void> {
-    await this.neoDapiN3.getAccount();
-    sessionStorage.setItem(NEOLINE_WAS_CONNECTED, 'true');
-  }
-
-  protected async internalDisconnect(): Promise<void> {
-    sessionStorage.removeItem(NEOLINE_WAS_CONNECTED);
-  }
-
-  @Catch('handleError')
-  protected async queryWalletState(): Promise<QueryWalletStateResult> {
-    const network = (await this.neoDapi.getNetworks()).defaultNetwork;
-    let address;
-    if (network === 'MainNet' || network === 'TestNet') {
-      address = (await this.neoDapi.getAccount()).address;
-    } else {
-      address = (await this.neoDapiN3.getAccount()).address;
-    }
-    const version = (await this.neoDapi.getProvider()).version;
-    return {
-      address,
-      network: NETWORK_IDS[network] ?? null,
-      version,
-    };
-  }
 }
-
-export const wallet = new NeoLine();

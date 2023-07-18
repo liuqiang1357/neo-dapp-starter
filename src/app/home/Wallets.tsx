@@ -1,63 +1,37 @@
 import { Popover } from 'antd';
-import { ComponentProps, FC, useEffect } from 'react';
+import { ComponentProps, FC } from 'react';
+import { useSnapshot } from 'valtio';
 import { Button } from 'app/_shared/Button';
-import { useSelector, useStore } from 'hooks/redux';
-import { selectWalletsPopoverOpen, setWalletsPopoverOpen } from 'store/slices/ui';
-import {
-  connectWallet,
-  disconnectWallet,
-  initWallets,
-  selectActiveWalletState,
-  selectWalletState,
-  selectWalletStates,
-} from 'store/slices/wallets';
-import { WALLET_INFOS } from 'utils/configs';
-import { WalletName } from 'utils/enums';
+import { useWeb3State } from 'hooks/web3';
+import { uiState } from 'states/ui';
+import { connect, disconnect } from 'states/web3';
+import { SUPPORTED_WALLET_IDS, WALLET_CONFIGS } from 'utils/configs';
 import { formatLongText } from 'utils/formatters';
+import { WalletId } from 'utils/models';
 import { tm } from 'utils/tailwind';
 import disconnectImage from './_images/disconnect.svg';
 
 export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
-  const walletsPopoverOpen = useSelector(selectWalletsPopoverOpen);
+  const { walletsPopoverOpen } = useSnapshot(uiState);
 
-  const walletState = useSelector(selectActiveWalletState);
+  const { connectionDatas, walletId, address, networkId } = useWeb3State();
 
-  const walletStates = useSelector(selectWalletStates);
-
-  const { dispatch, getState } = useStore();
-
-  const connect = async (walletName: WalletName) => {
-    const walletState = selectWalletState(getState(), { walletName });
-    if (!walletState) {
+  const connectWallet = async (walletId: WalletId) => {
+    if (connectionDatas[walletId].ready === false) {
+      window.open(WALLET_CONFIGS[walletId].downloadUrl);
       return;
     }
-    if (walletState.installed === false) {
-      window.open(WALLET_INFOS[walletName].downloadUrl);
-      return;
-    }
-    await dispatch(connectWallet(walletName)).unwrap();
-    dispatch(setWalletsPopoverOpen(false));
+    await connect({ walletId, networkId });
+    uiState.walletsPopoverOpen = false;
   };
-
-  const disconnect = async () => {
-    await dispatch(disconnectWallet()).unwrap();
-  };
-
-  useEffect(() => {
-    (async () => {
-      await dispatch(initWallets()).unwrap();
-    })();
-  }, [dispatch]);
 
   return (
     <div className={tm('inline-block', className)} {...rest}>
-      {walletState ? (
+      {walletId != null ? (
         <div className="group relative">
           <Button className="group-hover:opacity-0" type="primary">
-            <img className="h-[16px] w-[16px]" src={WALLET_INFOS[walletState.name].image} />
-            <div className="ml-[10px]">
-              {formatLongText(walletState.address, { headTailLength: 5 })}
-            </div>
+            <img className="h-[16px] w-[16px]" src={WALLET_CONFIGS[walletId].icon} />
+            <div className="ml-[10px]">{formatLongText(address, { headTailLength: 5 })}</div>
           </Button>
           <Button
             className="absolute inset-0 h-auto opacity-0 group-hover:opacity-100"
@@ -72,24 +46,22 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
       ) : (
         <Popover
           open={walletsPopoverOpen}
-          onOpenChange={open => dispatch(setWalletsPopoverOpen(open))}
+          onOpenChange={open => (uiState.walletsPopoverOpen = open)}
           trigger="click"
           content={
             <div className="flex min-w-[180px] flex-col space-y-[10px] p-[20px]">
-              {Object.values(WALLET_INFOS)
-                .filter(info => info.disabled !== true)
-                .map(info => (
-                  <Button
-                    key={info.name}
-                    className="justify-start"
-                    type="default"
-                    disabled={walletStates[info.name] == null}
-                    onClick={() => connect(info.name)}
-                  >
-                    <img className="h-[16px] w-[16px]" src={info.image} />
-                    <div className="ml-[10px]">{info.name}</div>
-                  </Button>
-                ))}
+              {SUPPORTED_WALLET_IDS.map(walletId => (
+                <Button
+                  key={WALLET_CONFIGS[walletId].name}
+                  className="justify-start"
+                  type="default"
+                  disabled={connectionDatas[walletId].ready == null}
+                  onClick={() => connectWallet(walletId)}
+                >
+                  <img className="h-[16px] w-[16px]" src={WALLET_CONFIGS[walletId].icon} />
+                  <div className="ml-[10px]">{WALLET_CONFIGS[walletId].name}</div>
+                </Button>
+              ))}
             </div>
           }
         >

@@ -2,33 +2,65 @@ import { StandardErrorCodes } from '@neongd/json-rpc';
 import { BaseDapi, Dapi, DapiErrorCodes } from '@neongd/neo-dapi';
 import { Provider } from '@neongd/neo-provider';
 import { Catch } from 'catchee';
-import { NetworkId, WalletName } from 'utils/enums';
 import { WalletError } from 'utils/errors';
-import { BaseWallet, QueryWalletStateResult } from './base';
+import { NetworkId } from 'utils/models';
 import {
+  Connector,
+  ConnectorData,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
   SignTransactionParams,
   SignTransactionResult,
-} from './wallet';
+} from './types';
 
 declare const window: Window & {
   OneGate?: Provider;
 };
 
-const ONEGATE_WAS_CONNECTED = 'ONEGATE_WAS_CONNECTED';
+const ONEGATE_CONNECTED = 'ONEGATE_CONNECTED';
 
 const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   MainNet: NetworkId.MainNet,
   TestNet: NetworkId.TestNet,
 };
 
-class OneGate extends BaseWallet {
+export class OneGateConnector extends Connector {
   private dapi: Dapi | null = null;
 
-  constructor() {
-    super(WalletName.OneGate);
+  async init(): Promise<void> {
+    if (window.OneGate) {
+      this.dapi = new BaseDapi(window.OneGate);
+    }
+  }
+
+  async isReady(): Promise<boolean> {
+    return this.dapi != null;
+  }
+
+  async isAuthorized(): Promise<boolean> {
+    return localStorage.getItem(ONEGATE_CONNECTED) === 'true';
+  }
+
+  @Catch('handleError')
+  async connect(): Promise<ConnectorData> {
+    await this.getDapi().getAccount();
+    localStorage.setItem(ONEGATE_CONNECTED, 'true');
+
+    if (window.OneGate) {
+      window.OneGate.on('accountChanged', this.updateData);
+      window.OneGate.on('networkChanged', this.updateData);
+    }
+    return this.queryData();
+  }
+
+  async disconnect(): Promise<void> {
+    localStorage.removeItem(ONEGATE_CONNECTED);
+
+    if (window.OneGate) {
+      window.OneGate.removeListener('accountChanged', this.updateData);
+      window.OneGate.removeListener('networkChanged', this.updateData);
+    }
   }
 
   @Catch('handleError')
@@ -58,7 +90,26 @@ class OneGate extends BaseWallet {
     return result;
   }
 
-  handleError(error: any): never {
+  @Catch('handleError')
+  private getDapi() {
+    if (this.dapi) {
+      return this.dapi;
+    }
+    throw new Error('neo dapi is not inited');
+  }
+
+  protected async queryData(): Promise<ConnectorData> {
+    const network = (await this.getDapi().getNetworks()).defaultNetwork;
+    const address = (await this.getDapi().getAccount()).address;
+    const version = (await this.getDapi().getProvider()).version;
+    return {
+      address,
+      networkId: NETWORK_IDS[network] ?? null,
+      version,
+    };
+  }
+
+  private handleError(error: any): never {
     let code = WalletError.Codes.UnknownError;
     switch (error.code) {
       case StandardErrorCodes.InvalidParams:
@@ -82,55 +133,4 @@ class OneGate extends BaseWallet {
     }
     throw new WalletError(error.message, { cause: error, code });
   }
-
-  // -------- protected methods --------
-
-  protected async internalInit(): Promise<boolean> {
-    const installed = window.OneGate != null;
-
-    if (installed && window.OneGate) {
-      this.dapi = new BaseDapi(window.OneGate);
-
-      window.OneGate.on('accountChanged', this.updateWalletState);
-      window.OneGate.on('networkChanged', this.updateWalletState);
-    }
-    return installed;
-  }
-
-  protected canRestoreConnection(): boolean {
-    return localStorage.getItem(ONEGATE_WAS_CONNECTED) === 'true';
-  }
-
-  @Catch('handleError')
-  protected async internalConnect(): Promise<void> {
-    await this.getDapi().getAccount();
-    localStorage.setItem(ONEGATE_WAS_CONNECTED, 'true');
-  }
-
-  protected async internalDisconnect(): Promise<void> {
-    localStorage.removeItem(ONEGATE_WAS_CONNECTED);
-  }
-
-  @Catch('handleError')
-  protected async queryWalletState(): Promise<QueryWalletStateResult> {
-    const network = (await this.getDapi().getNetworks()).defaultNetwork;
-    const address = (await this.getDapi().getAccount()).address;
-    const version = (await this.getDapi().getProvider()).version;
-    return {
-      address,
-      network: NETWORK_IDS[network] ?? null,
-      version,
-    };
-  }
-
-  // -------- private methods --------
-
-  private getDapi() {
-    if (this.dapi) {
-      return this.dapi;
-    }
-    throw new Error('neo dapi is not inited');
-  }
 }
-
-export const wallet = new OneGate();

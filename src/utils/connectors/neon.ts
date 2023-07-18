@@ -1,30 +1,65 @@
 import { parse as parseScopes } from '@cityofzion/neon-core/lib/tx/components/WitnessScope';
-import WcSdk from '@cityofzion/wallet-connect-sdk-core';
+import WcSdk, { NetworkType } from '@cityofzion/wallet-connect-sdk-core';
 import SignClient from '@walletconnect/sign-client';
+import { SignClientTypes } from '@walletconnect/types';
 import { Catch } from 'catchee';
-import { NEON_SIGN_CLIENT_OPTIONS } from 'utils/configs';
-import { NetworkId, WalletName } from 'utils/enums';
-import { TARGET_PRODUCTION } from 'utils/env';
 import { WalletError } from 'utils/errors';
-import { BaseWallet, QueryWalletStateResult } from './base';
+import { NetworkId } from 'utils/models';
 import {
+  Connector,
+  ConnectorData,
+  ConnectParams,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
   SignTransactionParams,
   SignTransactionResult,
-} from './wallet';
+} from './types';
 
 const NETWORK_IDS: Partial<Record<string, NetworkId>> = {
   'neo3:mainnet': NetworkId.MainNet,
   'neo3:testnet': NetworkId.TestNet,
 };
 
-class Neon extends BaseWallet {
+const WALLET_NETWORKS: Record<NetworkId, NetworkType> = {
+  [NetworkId.MainNet]: 'neo3:mainnet',
+  [NetworkId.TestNet]: 'neo3:testnet',
+};
+
+export interface NeonConnectorOptions {
+  signClientOptions: SignClientTypes.Options;
+}
+
+export class NeonConnector extends Connector {
   private wcSdk: WcSdk | null = null;
 
-  constructor() {
-    super(WalletName.Neon);
+  constructor(private options: NeonConnectorOptions) {
+    super();
+  }
+
+  async init(): Promise<void> {
+    this.wcSdk = new WcSdk(await SignClient.init(this.options.signClientOptions));
+    this.wcSdk.loadSession();
+  }
+
+  async isReady(): Promise<boolean> {
+    return this.wcSdk != null;
+  }
+
+  async isAuthorized(): Promise<boolean> {
+    return this.getWcSdk().isConnected() === true;
+  }
+
+  @Catch('handleError')
+  async connect(params: ConnectParams = {}): Promise<ConnectorData> {
+    if (!this.getWcSdk().isConnected()) {
+      await this.getWcSdk().connect(WALLET_NETWORKS[params.networkId ?? NetworkId.MainNet]);
+    }
+    return this.queryData();
+  }
+
+  async disconnect(): Promise<void> {
+    await this.getWcSdk().disconnect();
   }
 
   @Catch('handleError')
@@ -70,52 +105,16 @@ class Neon extends BaseWallet {
     throw new Error('Method not implemented.');
   }
 
-  handleError(error: any): never {
-    const code = WalletError.Codes.UnknownError;
-    // TODO: convert errors
-    throw new WalletError(error.message, { cause: error, code });
-  }
-
-  // -------- protected methods --------
-
-  protected async internalInit(): Promise<boolean> {
-    this.wcSdk = new WcSdk(await SignClient.init(NEON_SIGN_CLIENT_OPTIONS));
-    this.wcSdk.loadSession();
-    return true;
-  }
-
-  protected canRestoreConnection(): boolean {
-    return this.getWcSdk().isConnected() === true;
-  }
-
   @Catch('handleError')
-  protected async internalConnect(forceNewConnection: boolean): Promise<void> {
-    if (forceNewConnection) {
-      localStorage.removeItem('walletconnect');
-    }
-    if (!this.getWcSdk().isConnected()) {
-      await this.getWcSdk().connect(TARGET_PRODUCTION ? 'neo3:mainnet' : 'neo3:testnet');
-    }
-  }
-
-  @Catch('handleError')
-  protected async internalDisconnect(): Promise<void> {
-    await this.getWcSdk().disconnect();
-    localStorage.removeItem('walletconnect');
-  }
-
-  @Catch('handleError')
-  protected async queryWalletState(): Promise<QueryWalletStateResult> {
+  protected async queryData(): Promise<ConnectorData> {
     const network = this.getWcSdk().getChainId();
     const address = this.getWcSdk().getAccountAddress();
     return {
       address: address,
-      network: network != null ? NETWORK_IDS[network] ?? null : null,
+      networkId: network != null ? NETWORK_IDS[network] ?? null : null,
       version: null,
     };
   }
-
-  // -------- private methods --------
 
   private getWcSdk() {
     if (this.wcSdk) {
@@ -123,6 +122,10 @@ class Neon extends BaseWallet {
     }
     throw new Error('wc sdk is not inited');
   }
-}
 
-export const wallet = new Neon();
+  private handleError(error: any): never {
+    const code = WalletError.Codes.UnknownError;
+    // TODO: convert errors
+    throw new WalletError(error.message, { cause: error, code });
+  }
+}

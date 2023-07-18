@@ -3,22 +3,18 @@ import delay from 'delay';
 import { remove } from 'lodash-es';
 import { FC, useEffect, useRef } from 'react';
 import { usePageVisibility } from 'react-page-visibility';
-import { useDispatch, useSelector } from 'hooks/redux';
-import { clearError, registerErrorHandler, selectLastError } from 'store/slices/errors';
+import { useSnapshot } from 'valtio';
+import { clearError, errorsState, syncErrorsState } from 'states/errors';
 import { BaseError } from 'utils/errors';
 
 export const ErrorHandlder: FC = () => {
   const recentLocalMessages = useRef<string[]>([]);
 
-  const error = useSelector(selectLastError);
-
-  const dispatch = useDispatch();
+  const { lastError } = useSnapshot(errorsState);
 
   useEffect(() => {
-    (async () => {
-      await dispatch(registerErrorHandler()).unwrap();
-    })();
-  }, [dispatch]);
+    return syncErrorsState();
+  }, []);
 
   const pageVisible = usePageVisibility();
 
@@ -26,11 +22,11 @@ export const ErrorHandlder: FC = () => {
 
   useEffect(() => {
     setTimeout(async () => {
-      if (error) {
-        dispatch(clearError(error));
-        if (error instanceof BaseError) {
-          if (error.expose) {
-            const localMessage = error.getLocalMessage();
+      if (lastError) {
+        clearError(lastError);
+        if (lastError instanceof BaseError) {
+          if (lastError.expose) {
+            const localMessage = lastError.getLocalMessage();
             if (localMessage && pageVisible) {
               if (!recentLocalMessages.current.includes(localMessage)) {
                 recentLocalMessages.current.push(localMessage);
@@ -39,14 +35,14 @@ export const ErrorHandlder: FC = () => {
                 remove(recentLocalMessages.current, item => item === localMessage);
               }
             }
-            error.printTraceStack();
+            lastError.printTraceStack();
           }
           return;
         }
-        console.error(error);
+        console.error(lastError);
       }
     });
-  }, [dispatch, error, message, pageVisible]);
+  }, [lastError, message, pageVisible]);
 
   return <></>;
 };
