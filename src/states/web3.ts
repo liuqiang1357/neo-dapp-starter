@@ -27,11 +27,10 @@ export const web3State = proxy({
   }),
 
   get activeConnectionData() {
-    const lastConnectionData =
-      this.derived.lastConnectedWalletId != null
-        ? this.connectionDatas[this.derived.lastConnectedWalletId] ?? null
-        : null;
-    return lastConnectionData?.connected === true ? lastConnectionData : null;
+    return this.derived.lastConnectedWalletId != null &&
+      this.connectionDatas[this.derived.lastConnectedWalletId].connected
+      ? this.connectionDatas[this.derived.lastConnectedWalletId] ?? null
+      : null;
   },
 
   get walletId() {
@@ -74,7 +73,7 @@ export function syncWeb3State(): () => void {
       connectionData.ready = await connector.isReady();
       if (settingsState.lastConnectedWalletId === walletId) {
         if (await connector.isAuthorized()) {
-          connect({ walletId, networkId: web3State.networkId });
+          connect(walletId, web3State.networkId ?? undefined);
         }
       }
     });
@@ -90,12 +89,7 @@ export function syncWeb3State(): () => void {
   };
 }
 
-export interface ConnectParams {
-  walletId: WalletId;
-  networkId?: NetworkId;
-}
-
-export async function connect({ walletId, networkId }: ConnectParams): Promise<void> {
+export async function connect(walletId: WalletId, networkId?: NetworkId): Promise<void> {
   const data = await CONNECTORS[walletId].connect({ networkId });
   Object.assign(web3State.connectionDatas[walletId], data, { connected: true });
   settingsState.lastConnectedWalletId = walletId;
@@ -103,7 +97,9 @@ export async function connect({ walletId, networkId }: ConnectParams): Promise<v
 
 export async function disconnect(): Promise<void> {
   if (web3State.walletId == null) {
-    throw Error('Wallet is not connected.');
+    throw new WalletError('Wallet is not connected.', {
+      code: WalletError.Codes.NotConnected,
+    });
   }
   await CONNECTORS[web3State.walletId].disconnect();
   web3State.connectionDatas[web3State.walletId].connected = false;

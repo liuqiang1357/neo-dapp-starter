@@ -21,7 +21,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
       window.open(WALLET_CONFIGS[walletId].downloadUrl);
       return;
     }
-    await connect({ walletId, networkId });
+    await connect(walletId, networkId);
     uiState.walletsPopoverOpen = false;
   };
 
