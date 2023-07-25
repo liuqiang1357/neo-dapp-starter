@@ -1,13 +1,13 @@
 import { App, Popover } from 'antd';
 import { ComponentProps, FC, useEffect } from 'react';
+import { useSnapshot } from 'valtio';
 import { Button } from 'app/_shared/Button';
-import { useWeb3State } from 'hooks/web3';
-import { switchNetwork } from 'states/web3';
+import { switchNetwork, web3State } from 'states/web3';
 import { NETWORK_CONFIGS, SUPPORTED_NETWORK_IDS } from 'utils/configs';
 import { tm } from 'utils/tailwind';
 
 export const Networks: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
-  const { networkId, walletNetworkId } = useWeb3State();
+  const { networkId, walletNetworkId } = useSnapshot(web3State);
 
   const { message } = App.useApp();
 

@@ -70,15 +70,15 @@ export class OneGateConnector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ message, withoutSalt }: SignMessageParams): Promise<SignMessageResult> {
+  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
     if (withoutSalt !== true) {
       const { salt, publicKey, signature } = await this.getDapi().signMessage({
-        message: message,
+        message,
       });
       return { message, salt, publicKey, signature };
     } else {
       const { publicKey, signature } = await this.getDapi().signMessageWithoutSalt({
-        message: message,
+        message,
       });
       return { message, publicKey, signature };
     }

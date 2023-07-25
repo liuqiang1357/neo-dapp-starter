@@ -2,9 +2,8 @@ import { Popover } from 'antd';
 import { ComponentProps, FC } from 'react';
 import { useSnapshot } from 'valtio';
 import { Button } from 'app/_shared/Button';
-import { useWeb3State } from 'hooks/web3';
 import { uiState } from 'states/ui';
-import { connect, disconnect } from 'states/web3';
+import { connect, disconnect, web3State } from 'states/web3';
 import { SUPPORTED_WALLET_IDS, WALLET_CONFIGS } from 'utils/configs';
 import { formatLongText } from 'utils/formatters';
 import { WalletId } from 'utils/models';
@@ -14,7 +13,7 @@ import disconnectImage from './_images/disconnect.svg';
 export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
   const { walletsPopoverOpen } = useSnapshot(uiState);
 
-  const { connectionDatas, walletId, address, networkId } = useWeb3State();
+  const { connectionDatas, walletId, address, networkId } = useSnapshot(web3State);
 
   const connectWallet = async (walletId: WalletId) => {
     if (connectionDatas[walletId].ready === false) {

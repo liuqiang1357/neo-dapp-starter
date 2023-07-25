@@ -6,23 +6,51 @@ import { WalletId } from 'utils/models';
 const SETTINGS_KEY = 'SETTINGS';
 
 export const settingsState = proxy({
-  lastConnectedWalletId: null as WalletId | null,
-  dappNetworkId: SUPPORTED_NETWORK_IDS[0],
+  local: {
+    lastConnectedWalletId: null as WalletId | null,
+    dappNetworkId: SUPPORTED_NETWORK_IDS[0],
+  },
+  session: {},
 });
 
-export function syncSettingsState(): () => void {
+function syncLocalSettingsState() {
   const raw = localStorage.getItem(SETTINGS_KEY);
-  const persisted = raw != null ? JSON.parse(raw) : null;
 
-  if (!SUPPORTED_WALLET_IDS.includes(persisted?.lastConnectedWalletId)) {
-    delete persisted?.lastConnectedWalletId;
+  if (raw != null) {
+    const persisted = JSON.parse(raw);
+    if (!SUPPORTED_WALLET_IDS.includes(persisted.lastConnectedWalletId)) {
+      delete persisted.lastConnectedWalletId;
+    }
+    if (!SUPPORTED_NETWORK_IDS.includes(persisted.dappNetworkId)) {
+      delete persisted.dappNetworkId;
+    }
+    merge(settingsState.local, persisted);
   }
-  if (!SUPPORTED_NETWORK_IDS.includes(persisted?.dappNetworkId)) {
-    delete persisted?.dappNetworkId;
-  }
-  merge(settingsState, persisted);
 
-  return subscribe(settingsState, () => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsState));
+  return subscribe(settingsState.local, () => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsState.local));
   });
+}
+
+function syncSessionSettingsState() {
+  const raw = sessionStorage.getItem(SETTINGS_KEY);
+
+  if (raw != null) {
+    const persisted = JSON.parse(raw);
+    merge(settingsState.session, persisted);
+  }
+
+  return subscribe(settingsState.session, () => {
+    sessionStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsState.session));
+  });
+}
+
+export function syncSettingsState(): () => void {
+  const localSettingsDisposer = syncLocalSettingsState();
+  const sessionSettingsDisposer = syncSessionSettingsState();
+
+  return () => {
+    localSettingsDisposer();
+    sessionSettingsDisposer();
+  };
 }

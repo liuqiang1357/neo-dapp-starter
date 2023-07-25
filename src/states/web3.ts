@@ -1,4 +1,5 @@
 import { compareVersions } from 'compare-versions';
+import { merge } from 'lodash-es';
 import { proxy, subscribe } from 'valtio';
 import { derive } from 'valtio/utils';
 import { SUPPORTED_NETWORK_IDS, SUPPORTED_WALLET_IDS, WALLET_CONFIGS } from 'utils/configs';
@@ -22,8 +23,8 @@ export const web3State = proxy({
   }, {} as Record<WalletId, ConnectionData>),
 
   derived: derive({
-    lastConnectedWalletId: get => get(settingsState).lastConnectedWalletId,
-    dappNetworkId: get => get(settingsState).dappNetworkId,
+    lastConnectedWalletId: get => get(settingsState).local.lastConnectedWalletId,
+    dappNetworkId: get => get(settingsState).local.dappNetworkId,
   }),
 
   get activeConnectionData() {
@@ -43,7 +44,7 @@ export const web3State = proxy({
 
   get networkId() {
     if (this.walletNetworkId != null && SUPPORTED_NETWORK_IDS.includes(this.walletNetworkId)) {
-      return this.walletNetworkId as NetworkId;
+      return this.walletNetworkId;
     } else {
       return this.derived.dappNetworkId;
     }
@@ -65,13 +66,13 @@ export function syncWeb3State(): () => void {
     const connector = CONNECTORS[walletId];
     const connectionData = web3State.connectionDatas[walletId];
 
-    const listener = (data: ConnectorData) => Object.assign(connectionData, data);
+    const listener = (connectorData: ConnectorData) => merge(connectionData, connectorData);
     connector.on('change', listener);
     connectorDisposers.push(() => connector.off('change', listener));
 
     connector.init().then(async () => {
       connectionData.ready = await connector.isReady();
-      if (settingsState.lastConnectedWalletId === walletId) {
+      if (settingsState.local.lastConnectedWalletId === walletId) {
         if (await connector.isAuthorized()) {
           connect(walletId, web3State.networkId ?? undefined);
         }
@@ -80,7 +81,7 @@ export function syncWeb3State(): () => void {
   }
 
   const syncDappChainIdDisposer = subscribe(web3State, () => {
-    settingsState.dappNetworkId = web3State.networkId;
+    settingsState.local.dappNetworkId = web3State.networkId;
   });
 
   return () => {
@@ -90,20 +91,17 @@ export function syncWeb3State(): () => void {
 }
 
 export async function connect(walletId: WalletId, networkId?: NetworkId): Promise<void> {
-  const data = await CONNECTORS[walletId].connect({ networkId });
-  Object.assign(web3State.connectionDatas[walletId], data, { connected: true });
-  settingsState.lastConnectedWalletId = walletId;
+  const connectorData = await CONNECTORS[walletId].connect({ networkId });
+  merge(web3State.connectionDatas[walletId], { ...connectorData, connected: true });
+  settingsState.local.lastConnectedWalletId = walletId;
 }
 
 export async function disconnect(): Promise<void> {
-  if (web3State.walletId == null) {
-    throw new WalletError('Wallet is not connected.', {
-      code: WalletError.Codes.NotConnected,
-    });
+  if (web3State.walletId != null) {
+    await CONNECTORS[web3State.walletId].disconnect();
+    web3State.connectionDatas[web3State.walletId].connected = false;
+    settingsState.local.lastConnectedWalletId = null;
   }
-  await CONNECTORS[web3State.walletId].disconnect();
-  web3State.connectionDatas[web3State.walletId].connected = false;
-  settingsState.lastConnectedWalletId = null;
 }
 
 export function getActiveConnector(): Connector {
@@ -139,5 +137,5 @@ export async function switchNetwork(networkId: NetworkId): Promise<void> {
       code: WalletError.Codes.FailedToSwitchNetwork,
     });
   }
-  settingsState.dappNetworkId = networkId;
+  settingsState.local.dappNetworkId = networkId;
 }

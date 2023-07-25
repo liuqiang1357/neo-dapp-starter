@@ -1,8 +1,9 @@
 import { Input } from 'antd';
 import { FC, useState } from 'react';
+import { useSnapshot } from 'valtio';
 import { Button } from 'app/_shared/Button';
 import { useNep17RawBalance, useNep17Transfer } from 'hooks/nep17';
-import { useWeb3State } from 'hooks/web3';
+import { web3State } from 'states/web3';
 import { Networks } from './Networks';
 import { Wallets } from './Wallets';
 
@@ -11,9 +12,9 @@ export const Home: FC = () => {
   const [to, setTo] = useState('');
   const [rawAmount, setRawAmount] = useState('');
 
-  const { address } = useWeb3State();
+  const { address } = useSnapshot(web3State);
 
-  const { data: rawBalance } = useNep17RawBalance(contractHash !== '' ? contractHash : null);
+  const { data: rawBalance } = useNep17RawBalance(contractHash !== '' ? { contractHash } : null);
 
   const { mutateAsync: transfer, isLoading: sending } = useNep17Transfer();
 

@@ -95,7 +95,7 @@ export class O3Connector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ message, withoutSalt }: SignMessageParams): Promise<SignMessageResult> {
+  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
     if (withoutSalt !== true) {
       const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
       return { message, salt, publicKey, signature };

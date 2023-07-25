@@ -32,11 +32,11 @@ export interface NodeRequestParams extends RequestArguments {
   networkId: NetworkId;
 }
 
-export async function nodeRequest<T = any>(params: NodeRequestParams): Promise<T> {
+export async function nodeRequest<T = any>({ networkId, ...rest }: NodeRequestParams): Promise<T> {
   try {
-    const url = NETWORK_CONFIGS[params.networkId].nodeUrl;
+    const url = NETWORK_CONFIGS[networkId].nodeUrl;
     const transport = new BaseJsonRpcTransport(url);
-    return transport.request(params);
+    return transport.request(rest);
   } catch (error: any) {
     let code = BackendError.Codes.UnknownError;
     if (error.code === StandardErrorCodes.NetworkError) {
@@ -52,11 +52,11 @@ export interface FuraRequestParams extends RequestArguments {
   networkId: NetworkId;
 }
 
-export async function furaRequest<T = any>(params: FuraRequestParams): Promise<T> {
+export async function furaRequest<T = any>({ networkId, ...rest }: FuraRequestParams): Promise<T> {
   try {
-    const url = NETWORK_CONFIGS[params.networkId].furaUrl;
+    const url = NETWORK_CONFIGS[networkId].furaUrl;
     const instance = axios.create({ baseURL: url });
-    const response = await instance.post('/', params);
+    const response = await instance.post('/', rest);
     if (response.data.error == null) {
       return response.data.result;
     }

@@ -87,7 +87,7 @@ export class NeonConnector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ message, withoutSalt }: SignMessageParams): Promise<SignMessageResult> {
+  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
     if (withoutSalt !== true) {
       const {
         salt,
