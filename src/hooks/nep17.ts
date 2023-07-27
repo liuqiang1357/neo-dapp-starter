@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSnapshot } from 'valtio';
 import { getActiveConnector, web3State } from 'states/web3';
 import { addressToScriptHash } from 'utils/convertors';
+import { skipQuery } from 'utils/queryClient';
 import { invokeRead, waitForTransaction } from 'utils/web3';
 
 export interface UseNep17RawBalanceParams {
@@ -25,7 +26,7 @@ export function useNep17RawBalance(params: UseNep17RawBalanceParams | null) {
             return result[0].value;
           },
         }
-      : { enabled: false },
+      : skipQuery,
   );
 }
 
