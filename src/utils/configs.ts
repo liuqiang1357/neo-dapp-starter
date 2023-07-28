@@ -5,6 +5,8 @@ import onegate from 'assets/images/wallets/onegate.png';
 import { NetworkConfig, NetworkId, WalletConfig, WalletId } from './models';
 
 // Network configs
+export const SUPPORTED_NETWORK_IDS = [NetworkId.MainNet, NetworkId.TestNet];
+
 export const NETWORK_CONFIGS: Record<NetworkId, NetworkConfig> = {
   [NetworkId.MainNet]: {
     name: 'MainNet',
@@ -18,10 +20,14 @@ export const NETWORK_CONFIGS: Record<NetworkId, NetworkConfig> = {
   },
 };
 
-// Supported networks
-export const SUPPORTED_NETWORK_IDS = [NetworkId.MainNet, NetworkId.TestNet];
-
 // Wallet configs
+export const SUPPORTED_WALLET_IDS = [
+  WalletId.OneGate,
+  WalletId.NeoLine,
+  WalletId.O3,
+  WalletId.Neon,
+];
+
 export const WALLET_CONFIGS: Record<WalletId, WalletConfig> = {
   [WalletId.OneGate]: {
     name: WalletId.OneGate,
@@ -49,11 +55,3 @@ export const WALLET_CONFIGS: Record<WalletId, WalletConfig> = {
     minimumVersion: '0.0.0',
   },
 };
-
-// Supported wallets
-export const SUPPORTED_WALLET_IDS = [
-  WalletId.OneGate,
-  WalletId.NeoLine,
-  WalletId.O3,
-  WalletId.Neon,
-];

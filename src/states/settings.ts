@@ -46,11 +46,11 @@ function syncSessionSettingsState() {
 }
 
 export function syncSettingsState(): () => void {
-  const localSettingsDisposer = syncLocalSettingsState();
-  const sessionSettingsDisposer = syncSessionSettingsState();
+  const localDisposer = syncLocalSettingsState();
+  const sessionDisposer = syncSessionSettingsState();
 
   return () => {
-    localSettingsDisposer();
-    sessionSettingsDisposer();
+    localDisposer();
+    sessionDisposer();
   };
 }

@@ -11,16 +11,16 @@ import { tm } from 'utils/tailwind';
 import disconnectImage from './_images/disconnect.svg';
 
 export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
+  const { connectionDatas, walletId, address } = useSnapshot(web3State);
+
   const { walletsPopoverOpen } = useSnapshot(uiState);
 
-  const { connectionDatas, walletId, address, networkId } = useSnapshot(web3State);
-
-  const connectWallet = async (walletId: WalletId) => {
+  const handleConnectClick = async (walletId: WalletId) => {
     if (connectionDatas[walletId].ready === false) {
       window.open(WALLET_CONFIGS[walletId].downloadUrl);
       return;
     }
-    await connect(walletId, networkId);
+    await connect(walletId);
     uiState.walletsPopoverOpen = false;
   };
 
@@ -55,7 +55,7 @@ export const Wallets: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
                   className="justify-start"
                   type="default"
                   disabled={connectionDatas[walletId].ready == null}
-                  onClick={() => connectWallet(walletId)}
+                  onClick={() => handleConnectClick(walletId)}
                 >
                   <img className="h-[16px] w-[16px]" src={WALLET_CONFIGS[walletId].icon} />
                   <div className="ml-[10px]">{WALLET_CONFIGS[walletId].name}</div>

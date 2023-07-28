@@ -74,24 +74,24 @@ export function syncWeb3State(): () => void {
       connectionData.ready = await connector.isReady();
       if (settingsState.local.lastConnectedWalletId === walletId) {
         if (await connector.isAuthorized()) {
-          connect(walletId, web3State.networkId ?? undefined);
+          connect(walletId);
         }
       }
     });
   }
 
-  const syncDappChainIdDisposer = subscribe(web3State, () => {
+  const networkIdDisposer = subscribe(web3State, () => {
     settingsState.local.dappNetworkId = web3State.networkId;
   });
 
   return () => {
     connectorDisposers.forEach(disposer => disposer());
-    syncDappChainIdDisposer();
+    networkIdDisposer();
   };
 }
 
-export async function connect(walletId: WalletId, networkId?: NetworkId): Promise<void> {
-  const connectorData = await CONNECTORS[walletId].connect({ networkId });
+export async function connect(walletId: WalletId): Promise<void> {
+  const connectorData = await CONNECTORS[walletId].connect({ networkId: web3State.networkId });
   merge(web3State.connectionDatas[walletId], { ...connectorData, connected: true });
   settingsState.local.lastConnectedWalletId = walletId;
 }
@@ -104,7 +104,10 @@ export async function disconnect(): Promise<void> {
   }
 }
 
-export function getActiveConnector(): Connector {
+export async function ensureWalletReady(): Promise<{ connector: Connector; address: string }> {
+  if (web3State.walletId == null && settingsState.local.lastConnectedWalletId != null) {
+    await connect(settingsState.local.lastConnectedWalletId);
+  }
   if (web3State.walletId == null) {
     throw new WalletError('Wallet is not connected.', {
       code: WalletError.Codes.NotConnected,
@@ -128,7 +131,7 @@ export function getActiveConnector(): Connector {
       code: WalletError.Codes.IncompatibleVersion,
     });
   }
-  return CONNECTORS[web3State.walletId];
+  return { connector: CONNECTORS[web3State.walletId], address: web3State.address };
 }
 
 export async function switchNetwork(networkId: NetworkId): Promise<void> {

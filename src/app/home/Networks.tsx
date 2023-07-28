@@ -13,7 +13,7 @@ export const Networks: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
 
   useEffect(() => {
     if (networkId !== walletNetworkId && walletNetworkId != null) {
-      const disposer = message.info(
+      return message.info(
         <div className="inline-flex">
           <div>The wallet is not connected to {NETWORK_CONFIGS[networkId].name}.</div>
           <Button className="ml-[10px] underline" onClick={() => switchNetwork(networkId)}>
@@ -22,7 +22,6 @@ export const Networks: FC<ComponentProps<'div'>> = ({ className, ...rest }) => {
         </div>,
         100_000_000,
       );
-      return disposer;
     }
   }, [networkId, message, walletNetworkId]);
 
