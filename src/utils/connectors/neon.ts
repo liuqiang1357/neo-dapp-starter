@@ -53,7 +53,7 @@ export class NeonConnector extends Connector {
   @Catch('handleError')
   async connect(params: ConnectParams = {}): Promise<ConnectorData> {
     if (!this.getWcSdk().isConnected()) {
-      await this.getWcSdk().connect(WALLET_NETWORKS[params.networkId ?? NetworkId.MainNet]);
+      await this.getWcSdk().connect(WALLET_NETWORKS[params.networkId ?? NetworkId.MainNet], []);
     }
     return this.queryData();
   }
@@ -123,7 +123,7 @@ export class NeonConnector extends Connector {
     throw new Error('wc sdk is not inited');
   }
 
-  private handleError(error: any): never {
+  protected handleError(error: any): never {
     const code = WalletError.Codes.UnknownError;
     // TODO: convert errors
     throw new WalletError(error.message, { cause: error, code });

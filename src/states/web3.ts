@@ -10,17 +10,20 @@ import { CONNECTORS } from 'utils/web3';
 import { settingsState } from './settings';
 
 export const web3State = proxy({
-  connectionDatas: SUPPORTED_WALLET_IDS.reduce((acc, cur) => {
-    acc[cur] = {
-      walletId: cur,
-      address: null,
-      networkId: null,
-      version: null,
-      ready: null,
-      connected: false,
-    };
-    return acc;
-  }, {} as Record<WalletId, ConnectionData>),
+  connectionDatas: SUPPORTED_WALLET_IDS.reduce(
+    (acc, cur) => {
+      acc[cur] = {
+        walletId: cur,
+        address: null,
+        networkId: null,
+        version: null,
+        ready: null,
+        connected: false,
+      };
+      return acc;
+    },
+    {} as Record<WalletId, ConnectionData>,
+  ),
 
   derived: derive({
     lastConnectedWalletId: get => get(settingsState).local.lastConnectedWalletId,

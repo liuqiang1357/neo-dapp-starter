@@ -109,7 +109,7 @@ export class OneGateConnector extends Connector {
     };
   }
 
-  private handleError(error: any): never {
+  protected handleError(error: any): never {
     let code = WalletError.Codes.UnknownError;
     switch (error.code) {
       case StandardErrorCodes.InvalidParams:

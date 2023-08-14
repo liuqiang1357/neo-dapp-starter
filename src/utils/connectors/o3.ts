@@ -126,7 +126,7 @@ export class O3Connector extends Connector {
     };
   }
 
-  private handleError(error: any): never {
+  protected handleError(error: any): never {
     let code = WalletError.Codes.UnknownError;
     switch (error.type) {
       case 'NO_PROVIDER':
