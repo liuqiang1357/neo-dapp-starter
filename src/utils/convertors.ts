@@ -1,9 +1,12 @@
-import { wallet } from '@cityofzion/neon-js';
+import {
+  getAddressFromScriptHash,
+  getScriptHashFromAddress,
+} from '@cityofzion/neon-core/lib/wallet';
 
 export function addressToScriptHash(address: string): string {
-  return `0x${wallet.getScriptHashFromAddress(address)}`;
+  return `0x${getScriptHashFromAddress(address)}`;
 }
 
 export function scriptHashToAddress(hash: string): string {
-  return wallet.getAddressFromScriptHash(hash.replace(/0x/, ''));
+  return getAddressFromScriptHash(hash.replace(/0x/, ''));
 }

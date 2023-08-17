@@ -1,30 +1,39 @@
 import { BaseJsonRpcTransport, RequestArguments, StandardErrorCodes } from '@neongd/json-rpc';
 import axios from 'axios';
 import delay from 'delay';
+import pMemoize from 'p-memoize';
 import { NetworkId, WalletId } from 'utils/models';
 import { NETWORK_CONFIGS } from './configs';
-import { NeoLineConnector } from './connectors/neoline';
-import { NeonConnector } from './connectors/neon';
-import { O3Connector } from './connectors/o3';
-import { OneGateConnector } from './connectors/onegate';
 import { Connector, InvokeParams } from './connectors/types';
 import { BackendError } from './errors';
 
-export const CONNECTORS: Record<WalletId, Connector> = {
-  [WalletId.OneGate]: new OneGateConnector(),
-  [WalletId.NeoLine]: new NeoLineConnector(),
-  [WalletId.O3]: new O3Connector(),
-  [WalletId.Neon]: new NeonConnector({
-    signClientOptions: {
-      projectId: '6fc6f515daaa4b001616766bc028bffa', // TODO
-      relayUrl: 'wss://relay.walletconnect.com',
-      metadata: {
-        name: 'React App', // TODO
-        description: 'Web site created using create-react-app', // TODO
-        url: 'http://localhost:3000', // TODO
-        icons: ['http://localhost:3000/favicon.ico'], // TODO
+export const CONNECTORS: Record<WalletId, () => Promise<Connector>> = {
+  [WalletId.OneGate]: pMemoize(async () => {
+    const { OneGateConnector } = await import('./connectors/onegate');
+    return new OneGateConnector();
+  }),
+  [WalletId.NeoLine]: pMemoize(async () => {
+    const { NeoLineConnector } = await import('./connectors/neoline');
+    return new NeoLineConnector();
+  }),
+  [WalletId.O3]: pMemoize(async () => {
+    const { O3Connector } = await import('./connectors/o3');
+    return new O3Connector();
+  }),
+  [WalletId.Neon]: pMemoize(async () => {
+    const { NeonConnector } = await import('./connectors/neon');
+    return new NeonConnector({
+      signClientOptions: {
+        projectId: '6fc6f515daaa4b001616766bc028bffa', // TODO
+        relayUrl: 'wss://relay.walletconnect.com',
+        metadata: {
+          name: 'React App', // TODO
+          description: 'Web site created using create-react-app', // TODO
+          url: 'http://localhost:3000', // TODO
+          icons: ['http://localhost:3000/favicon.ico'], // TODO
+        },
       },
-    },
+    });
   }),
 };
 

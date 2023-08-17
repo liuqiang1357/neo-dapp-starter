@@ -6,5 +6,10 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  resolve: {
+    alias: {
+      buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
+    },
+  },
   plugins: [react(), tsconfigPaths()],
 });

@@ -63,24 +63,29 @@ export const web3State = proxy({
 });
 
 export function syncWeb3State(): () => void {
+  let disposed = false;
   const connectorDisposers: (() => void)[] = [];
 
   for (const walletId of SUPPORTED_WALLET_IDS) {
-    const connector = CONNECTORS[walletId];
-    const connectionData = web3State.connectionDatas[walletId];
+    (async () => {
+      const connector = await CONNECTORS[walletId]();
+      const connectionData = web3State.connectionDatas[walletId];
 
-    const listener = (connectorData: ConnectorData) => merge(connectionData, connectorData);
-    connector.on('change', listener);
-    connectorDisposers.push(() => connector.off('change', listener));
+      if (disposed) {
+        return;
+      }
+      const listener = (connectorData: ConnectorData) => merge(connectionData, connectorData);
+      connector.on('change', listener);
+      connectorDisposers.push(() => connector.off('change', listener));
 
-    connector.init().then(async () => {
+      await connector.init();
       connectionData.ready = await connector.isReady();
       if (settingsState.local.lastConnectedWalletId === walletId) {
         if (await connector.isAuthorized()) {
           connect(walletId);
         }
       }
-    });
+    })();
   }
 
   const networkIdDisposer = subscribe(web3State, () => {
@@ -88,20 +93,23 @@ export function syncWeb3State(): () => void {
   });
 
   return () => {
+    disposed = true;
     connectorDisposers.forEach(disposer => disposer());
     networkIdDisposer();
   };
 }
 
 export async function connect(walletId: WalletId): Promise<void> {
-  const connectorData = await CONNECTORS[walletId].connect({ networkId: web3State.networkId });
+  const connector = await CONNECTORS[walletId]();
+  const connectorData = await connector.connect({ networkId: web3State.networkId });
   merge(web3State.connectionDatas[walletId], { ...connectorData, connected: true });
   settingsState.local.lastConnectedWalletId = walletId;
 }
 
 export async function disconnect(): Promise<void> {
   if (web3State.walletId != null) {
-    await CONNECTORS[web3State.walletId].disconnect();
+    const connector = await CONNECTORS[web3State.walletId]();
+    await connector.disconnect();
     web3State.connectionDatas[web3State.walletId].connected = false;
     settingsState.local.lastConnectedWalletId = null;
   }
@@ -134,7 +142,8 @@ export async function ensureWalletReady(): Promise<{ connector: Connector; addre
       code: WalletError.Codes.IncompatibleVersion,
     });
   }
-  return { connector: CONNECTORS[web3State.walletId], address: web3State.address };
+  const connector = await CONNECTORS[web3State.walletId]();
+  return { connector, address: web3State.address };
 }
 
 export async function switchNetwork(networkId: NetworkId): Promise<void> {

@@ -1,4 +1,4 @@
-import { wallet as neonWallet } from '@cityofzion/neon-js';
+import { wallet as neonWallet } from '@cityofzion/neon-core';
 import { Catch } from 'catchee';
 import { windowReady } from 'html-ready';
 import { WalletError } from 'utils/errors';
