@@ -4,7 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   define: {
-    global: 'window',
+    global: 'globalThis',
   },
   plugins: [react(), tsconfigPaths()],
 });
