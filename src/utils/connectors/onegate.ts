@@ -7,6 +7,7 @@ import { NetworkId } from 'utils/models';
 import {
   Connector,
   ConnectorData,
+  InvokeMultipleParams,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
@@ -66,6 +67,12 @@ export class OneGateConnector extends Connector {
   @Catch('handleError')
   async invoke(params: InvokeParams): Promise<string> {
     const result = await this.getDapi().invoke(params);
+    return result.txid;
+  }
+
+  @Catch('handleError')
+  async invokeMultiple(params: InvokeMultipleParams): Promise<string> {
+    const result = await this.getDapi().invokeMulti(params);
     return result.txid;
   }
 

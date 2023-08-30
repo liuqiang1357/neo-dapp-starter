@@ -13,6 +13,11 @@ export interface InvokeParams {
   signers?: Signer[];
 }
 
+export interface InvokeMultipleParams {
+  invocations: Invocation[];
+  signers?: Signer[];
+}
+
 export interface SignMessageParams {
   message: string;
   withoutSalt?: boolean;
@@ -63,6 +68,7 @@ export abstract class Connector extends EventEmitter<ConnectorEvents> {
   abstract disconnect(): Promise<void>;
 
   abstract invoke(params: InvokeParams): Promise<string>;
+  abstract invokeMultiple(params: InvokeMultipleParams): Promise<string>;
   abstract signMessage(params: SignMessageParams): Promise<SignMessageResult>;
   abstract signTransaction(params: SignTransactionParams): Promise<SignTransactionResult>;
 

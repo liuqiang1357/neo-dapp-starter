@@ -9,6 +9,7 @@ import {
   Connector,
   ConnectorData,
   ConnectParams,
+  InvokeMultipleParams,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
@@ -73,6 +74,28 @@ export class NeonConnector extends Connector {
           args: (params.args as any[]) ?? [],
         },
       ],
+      // TODO: cannot add duplicate cosigner
+      signers: (params.signers ?? []).slice(0, 1).map(signer => ({
+        account: signer.account,
+        scopes: parseScopes(signer.scopes),
+        allowedGroups: signer.allowedGroups,
+        allowedContracts: signer.allowedContracts,
+        // TODO: parse rules?
+        rules: signer.rules,
+      })),
+    });
+    return result;
+  }
+
+  @Catch('handleError')
+  async invokeMultiple(params: InvokeMultipleParams): Promise<string> {
+    const result = await this.getWcSdk().invokeFunction({
+      invocations: params.invocations.map(invocaction => ({
+        scriptHash: invocaction.scriptHash,
+        operation: invocaction.operation,
+        // TODO: convert args?
+        args: (invocaction.args as any[]) ?? [],
+      })),
       // TODO: cannot add duplicate cosigner
       signers: (params.signers ?? []).slice(0, 1).map(signer => ({
         account: signer.account,

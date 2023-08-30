@@ -7,6 +7,7 @@ import { NetworkId } from 'utils/models';
 import {
   Connector,
   ConnectorData,
+  InvokeMultipleParams,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
@@ -91,6 +92,15 @@ export class O3Connector extends Connector {
   @Catch('handleError')
   async invoke(params: InvokeParams): Promise<string> {
     const result = await this.neoDapiN3.invoke(params);
+    return result.txid;
+  }
+
+  @Catch('handleError')
+  async invokeMultiple(params: InvokeMultipleParams): Promise<string> {
+    const result = await this.neoDapiN3.invokeMulti({
+      invokeArgs: params.invocations,
+      signers: params.signers,
+    });
     return result.txid;
   }
 

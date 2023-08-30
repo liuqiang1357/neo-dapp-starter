@@ -1,10 +1,13 @@
+import { Buffer } from 'buffer';
+import { ContractParam, createScript } from '@cityofzion/neon-core/lib/sc';
 import { BaseJsonRpcTransport, RequestArguments, StandardErrorCodes } from '@neongd/json-rpc';
 import axios from 'axios';
 import delay from 'delay';
 import pMemoize from 'p-memoize';
 import { NetworkId, WalletId } from 'utils/models';
 import { NETWORK_CONFIGS } from './configs';
-import { Connector, InvokeParams } from './connectors/types';
+import { Connector, InvokeMultipleParams, InvokeParams } from './connectors/types';
+import { serializeSigner } from './convertors';
 import { BackendError } from './errors';
 
 export const CONNECTORS: Record<WalletId, () => Promise<Connector>> = {
@@ -125,6 +128,35 @@ export async function invokeRead<T = unknown>(params: InvokeReadParams): Promise
         rules: signer.rules,
       })),
     ],
+    networkId: params.networkId,
+  });
+  if ((result as any).exception == null) {
+    return (result as any).stack;
+  }
+  const finalError = new BackendError((result as any).exception, {
+    cause: result,
+    code: BackendError.Codes.BadRequest,
+  });
+  throw finalError;
+}
+
+export interface InvokeReadMultipleParams extends InvokeMultipleParams {
+  networkId: NetworkId;
+}
+
+export async function invokeReadMultiple<T = unknown>(
+  params: InvokeReadMultipleParams,
+): Promise<T> {
+  const script = createScript(
+    ...params.invocations.map(invocation => ({
+      ...invocation,
+      args: invocation.args?.map(arg => ContractParam.fromJson(arg)),
+    })),
+  );
+  const base64Script = Buffer.from(script, 'hex').toString('base64');
+  const result = await nodeRequest<T>({
+    method: 'invokescript',
+    params: [base64Script, (params.signers ?? []).map(serializeSigner)],
     networkId: params.networkId,
   });
   if ((result as any).exception == null) {

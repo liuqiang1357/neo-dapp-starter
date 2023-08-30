@@ -1,4 +1,7 @@
-import { wallet as neonWallet } from '@cityofzion/neon-core';
+import {
+  getPublicKeyFromVerificationScript,
+  getSignaturesFromInvocationScript,
+} from '@cityofzion/neon-core/lib/wallet';
 import { Catch } from 'catchee';
 import { windowReady } from 'html-ready';
 import { WalletError } from 'utils/errors';
@@ -6,6 +9,7 @@ import { NetworkId } from 'utils/models';
 import {
   Connector,
   ConnectorData,
+  InvokeMultipleParams,
   InvokeParams,
   SignMessageParams,
   SignMessageResult,
@@ -86,6 +90,15 @@ export class NeoLineConnector extends Connector {
   }
 
   @Catch('handleError')
+  async invokeMultiple(params: InvokeMultipleParams): Promise<string> {
+    const result = await this.neoDapiN3.invokeMultiple({
+      invokeArgs: params.invocations,
+      signers: params.signers,
+    });
+    return result.txid;
+  }
+
+  @Catch('handleError')
   async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
     if (withoutSalt !== true) {
       const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
@@ -113,12 +126,8 @@ export class NeoLineConnector extends Connector {
       },
       magicNumber: MAGIC_NUMBERS[params.network ?? NetworkId.MainNet],
     });
-    const signatures = neonWallet.getSignaturesFromInvocationScript(
-      result.witnesses[0].invocationScript,
-    );
-    const publicKey = neonWallet.getPublicKeyFromVerificationScript(
-      result.witnesses[0].verificationScript,
-    );
+    const signatures = getSignaturesFromInvocationScript(result.witnesses[0].invocationScript);
+    const publicKey = getPublicKeyFromVerificationScript(result.witnesses[0].verificationScript);
     return { signature: signatures[0], publicKey };
   }
 
