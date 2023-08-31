@@ -55,7 +55,9 @@ export function useNep17Transfer() {
         signers: [{ account: addressToScriptHash(address), scopes: 'CalledByEntry' }],
       });
       await waitForTransaction({ networkId, transactionHash });
-      await queryClient.invalidateQueries({ queryKey: ['Nep17RawBalance'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['Nep17RawBalance', { networkId, address }],
+      });
     },
   });
 }
