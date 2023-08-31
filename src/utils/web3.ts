@@ -174,16 +174,16 @@ export interface WaitForTransactionParams {
   transactionHash: string;
 }
 
-export async function waitForTransaction(params: WaitForTransactionParams): Promise<void> {
+export async function waitForTransaction(params: WaitForTransactionParams): Promise<number> {
   let retryCount = 0;
   for (;;) {
     try {
-      await nodeRequest({
-        method: 'getapplicationlog',
+      const result = await nodeRequest<number>({
+        method: 'gettransactionheight',
         params: [params.transactionHash],
         networkId: params.networkId,
       });
-      break;
+      return result;
     } catch (error) {
       if (error instanceof BackendError && error.code === BackendError.Codes.NotFound) {
         error.expose = false;
