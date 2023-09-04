@@ -1,4 +1,4 @@
-import { merge } from 'lodash-es';
+import { merge, pick } from 'lodash-es';
 import { proxy, subscribe } from 'valtio';
 import { SUPPORTED_NETWORK_IDS, SUPPORTED_WALLET_IDS } from 'utils/configs';
 import { WalletId } from 'utils/models';
@@ -24,7 +24,7 @@ function syncLocalSettingsState() {
     if (!SUPPORTED_NETWORK_IDS.includes(persisted.dappNetworkId)) {
       delete persisted.dappNetworkId;
     }
-    merge(settingsState.local, persisted);
+    merge(settingsState.local, pick(persisted, Object.keys(settingsState.local)));
   }
 
   return subscribe(settingsState.local, () => {
@@ -37,7 +37,7 @@ function syncSessionSettingsState() {
 
   if (raw != null) {
     const persisted = JSON.parse(raw);
-    merge(settingsState.session, persisted);
+    merge(settingsState.session, pick(persisted, Object.keys(settingsState.session)));
   }
 
   return subscribe(settingsState.session, () => {
