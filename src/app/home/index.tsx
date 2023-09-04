@@ -19,8 +19,8 @@ export const Home: FC = () => {
   const { mutateAsync: transfer, isLoading: sending } = useNep17Transfer();
 
   const send = async () => {
-    if (address != null && contractHash !== '' && to !== '' && rawAmount !== '') {
-      await transfer({ contractHash, from: address, to, rawAmount });
+    if (contractHash !== '' && to !== '' && rawAmount !== '') {
+      await transfer({ contractHash, to, rawAmount });
     }
   };
 

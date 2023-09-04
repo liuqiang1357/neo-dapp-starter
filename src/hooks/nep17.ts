@@ -31,7 +31,6 @@ export function useNep17RawBalance(params: UseNep17RawBalanceParams | null) {
 
 interface Nep17TransferParams {
   contractHash: string;
-  from: string;
   to: string;
   rawAmount: string;
 }
@@ -41,13 +40,13 @@ export function useNep17Transfer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ contractHash, from, to, rawAmount }: Nep17TransferParams) => {
+    mutationFn: async ({ contractHash, to, rawAmount }: Nep17TransferParams) => {
       const { connector, address } = await ensureWalletReady();
       const transactionHash = await connector.invoke({
         scriptHash: contractHash,
         operation: 'transfer',
         args: [
-          { type: 'Hash160', value: addressToScriptHash(from) },
+          { type: 'Hash160', value: addressToScriptHash(address) },
           { type: 'Hash160', value: addressToScriptHash(to) },
           { type: 'Integer', value: rawAmount },
           { type: 'Any', value: null },
