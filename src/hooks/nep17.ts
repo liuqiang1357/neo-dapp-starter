@@ -6,30 +6,32 @@ import { addressToScriptHash } from 'utils/convertors';
 import { invokeRead, waitForTransaction } from 'utils/web3';
 
 interface UseNep17RawBalanceParams {
+  address: string;
   contractHash: string;
 }
 
 export function useNep17RawBalance(params: UseNep17RawBalanceParams | null) {
-  const { networkId, address } = useSnapshot(web3State);
+  const { networkId } = useSnapshot(web3State);
 
   return useQuery({
-    queryKey: ['Nep17RawBalance', { networkId, address, ...params }],
+    queryKey: ['Nep17RawBalance', { networkId, ...params }],
     queryFn: async () => {
-      invariant(address != null && params != null);
+      invariant(params != null);
 
       const result = await invokeRead<[{ value: string }]>({
         networkId,
         scriptHash: params.contractHash,
         operation: 'balanceOf',
-        args: [{ type: 'Hash160', value: addressToScriptHash(address) }],
+        args: [{ type: 'Hash160', value: addressToScriptHash(params.address) }],
       });
       return result[0].value;
     },
-    enabled: address != null && params != null,
+    enabled: params != null,
   });
 }
 
 interface Nep17TransferParams {
+  address: string;
   contractHash: string;
   to: string;
   rawAmount: string;
@@ -40,8 +42,8 @@ export function useNep17Transfer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ contractHash, to, rawAmount }: Nep17TransferParams) => {
-      const { connector, address } = await ensureWalletReady();
+    mutationFn: async ({ address, contractHash, to, rawAmount }: Nep17TransferParams) => {
+      const { connector } = await ensureWalletReady({ address });
       const transactionHash = await connector.invoke({
         scriptHash: contractHash,
         operation: 'transfer',

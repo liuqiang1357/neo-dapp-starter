@@ -14,13 +14,15 @@ export const Home: FC = () => {
 
   const { address } = useSnapshot(web3State);
 
-  const { data: rawBalance } = useNep17RawBalance(contractHash !== '' ? { contractHash } : null);
+  const { data: rawBalance } = useNep17RawBalance(
+    address != null && contractHash !== '' ? { address, contractHash } : null,
+  );
 
   const { mutateAsync: transfer, isLoading: sending } = useNep17Transfer();
 
   const send = async () => {
-    if (contractHash !== '' && to !== '' && rawAmount !== '') {
-      await transfer({ contractHash, to, rawAmount });
+    if (address != null && contractHash !== '' && to !== '' && rawAmount !== '') {
+      await transfer({ address, contractHash, to, rawAmount });
     }
   };
 

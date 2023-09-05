@@ -49,6 +49,7 @@ enum WalletErrorCodes {
   IncorrectNetwork = 'IncorrectNetwork',
   IncompatibleVersion = 'IncompatibleVersion',
   NoAccount = 'NoAccount',
+  MismatchedAccount = 'MismatchedAccount',
   UserRejected = 'UserRejected',
   MalformedInput = 'MalformedInput',
   InsufficientFunds = 'InsufficientFunds',

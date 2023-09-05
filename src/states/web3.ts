@@ -115,7 +115,14 @@ export async function disconnect(): Promise<void> {
   }
 }
 
-export async function ensureWalletReady(): Promise<{ connector: Connector; address: string }> {
+interface EnsureWalletReadyParams {
+  address?: string;
+}
+
+export async function ensureWalletReady({ address }: EnsureWalletReadyParams = {}): Promise<{
+  connector: Connector;
+  address: string;
+}> {
   if (web3State.walletId == null && settingsState.local.lastConnectedWalletId != null) {
     await connect(settingsState.local.lastConnectedWalletId);
   }
@@ -132,6 +139,11 @@ export async function ensureWalletReady(): Promise<{ connector: Connector; addre
   if (web3State.address == null) {
     throw new WalletError('Wallet does not have an account.', {
       code: WalletError.Codes.NoAccount,
+    });
+  }
+  if (address != null && web3State.address !== address) {
+    throw new WalletError('Wallet does not have an account.', {
+      code: WalletError.Codes.MismatchedAccount,
     });
   }
   if (
