@@ -2,7 +2,7 @@ import { Input } from 'antd';
 import { FC, useState } from 'react';
 import { useSnapshot } from 'valtio';
 import { Button } from 'app/_shared/Button';
-import { useNep17RawBalance, useNep17Transfer } from 'hooks/nep17';
+import { useNep17RawBalance, useTransferNep17 } from 'hooks/nep17';
 import { web3State } from 'states/web3';
 import { Networks } from './Networks';
 import { Wallets } from './Wallets';
@@ -18,7 +18,7 @@ export const Home: FC = () => {
     address != null && contractHash !== '' ? { address, contractHash } : null,
   );
 
-  const { mutateAsync: transfer, isLoading: sending } = useNep17Transfer();
+  const { mutateAsync: transfer, isLoading: sending } = useTransferNep17();
 
   const send = async () => {
     if (address != null && contractHash !== '' && to !== '' && rawAmount !== '') {
