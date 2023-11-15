@@ -116,10 +116,14 @@ export async function disconnect(): Promise<void> {
 }
 
 interface EnsureWalletReadyParams {
+  networkId?: NetworkId;
   address?: string;
 }
 
-export async function ensureWalletReady({ address }: EnsureWalletReadyParams = {}): Promise<{
+export async function ensureWalletReady({
+  networkId,
+  address,
+}: EnsureWalletReadyParams = {}): Promise<{
   connector: Connector;
   address: string;
 }> {
@@ -131,7 +135,10 @@ export async function ensureWalletReady({ address }: EnsureWalletReadyParams = {
       code: WalletError.Codes.NotConnected,
     });
   }
-  if (web3State.walletNetworkId !== web3State.networkId) {
+  if (
+    (networkId != null && web3State.networkId !== networkId) ||
+    web3State.walletNetworkId !== web3State.networkId
+  ) {
     throw new WalletError('Wallet is not in correct network.', {
       code: WalletError.Codes.IncorrectNetwork,
     });

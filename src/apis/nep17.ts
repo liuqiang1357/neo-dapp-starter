@@ -28,7 +28,10 @@ export interface TransferNep17Params {
 }
 
 export async function transferNep17(params: TransferNep17Params): Promise<string> {
-  const { connector } = await ensureWalletReady({ address: params.address });
+  const { connector } = await ensureWalletReady({
+    networkId: params.networkId,
+    address: params.address,
+  });
   const transactionHash = await connector.invoke({
     scriptHash: params.contractHash,
     operation: 'transfer',
