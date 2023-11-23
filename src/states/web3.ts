@@ -101,7 +101,7 @@ export function syncWeb3State(): () => void {
 
 export async function connect(walletId: WalletId): Promise<void> {
   const connector = await CONNECTORS[walletId]();
-  const connectorData = await connector.connect({ networkId: web3State.networkId });
+  const connectorData = await connector.connect({ networkId: web3State.networkId ?? undefined });
   merge(web3State.connectionDatas[walletId], { ...connectorData, connected: true });
   settingsState.local.lastConnectedWalletId = walletId;
 }

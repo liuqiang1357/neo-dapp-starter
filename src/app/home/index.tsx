@@ -8,21 +8,29 @@ import { Networks } from './Networks';
 import { Wallets } from './Wallets';
 
 export const Home: FC = () => {
-  const [contractHash, setContractHash] = useState('');
+  const [contractHash, setContractHash] = useState('0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5');
   const [to, setTo] = useState('');
   const [rawAmount, setRawAmount] = useState('');
 
-  const { address } = useSnapshot(web3State);
+  const { networkId, address } = useSnapshot(web3State);
 
   const { data: rawBalance } = useNep17RawBalance(
-    address != null && contractHash !== '' ? { address, contractHash } : null,
+    networkId != null && address != null && contractHash !== ''
+      ? { networkId, address, contractHash }
+      : null,
   );
 
   const { mutateAsync: transfer, isLoading: sending } = useTransferNep17();
 
   const send = async () => {
-    if (address != null && contractHash !== '' && to !== '' && rawAmount !== '') {
-      await transfer({ address, contractHash, to, rawAmount });
+    if (
+      networkId != null &&
+      address != null &&
+      contractHash !== '' &&
+      to !== '' &&
+      rawAmount !== ''
+    ) {
+      await transfer({ networkId, address, contractHash, to, rawAmount });
     }
   };
 
