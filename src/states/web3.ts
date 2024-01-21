@@ -115,10 +115,10 @@ export async function disconnect(): Promise<void> {
   }
 }
 
-interface EnsureWalletReadyParams {
+type EnsureWalletReadyParams = {
   networkId?: NetworkId;
   address?: string;
-}
+};
 
 export async function ensureWalletReady({
   networkId,

@@ -1,10 +1,10 @@
 import i18n from 'i18next';
 
-export interface BaseErrorOptions {
+export type BaseErrorOptions = {
   cause?: unknown;
   data?: Record<string, unknown>;
   expose?: boolean;
-}
+};
 
 export class BaseError extends Error {
   cause: unknown;
@@ -58,9 +58,9 @@ enum WalletErrorCodes {
   FailedToSwitchNetwork = 'FailedToSwitchNetwork',
 }
 
-export interface WalletErrorOptions extends BaseErrorOptions {
+export type WalletErrorOptions = BaseErrorOptions & {
   code?: WalletErrorCodes;
-}
+};
 
 export class WalletError extends BaseError {
   static readonly Codes = WalletErrorCodes;
@@ -89,9 +89,9 @@ enum BackendErrorCodes {
   NotFound = 'NotFound',
 }
 
-export interface BackendErrorOptions extends BaseErrorOptions {
+export type BackendErrorOptions = BaseErrorOptions & {
   code?: BackendErrorCodes;
-}
+};
 
 export class BackendError extends BaseError {
   static readonly Codes = BackendErrorCodes;

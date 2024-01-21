@@ -40,9 +40,9 @@ export const CONNECTORS: Record<WalletId, () => Promise<Connector>> = {
   }),
 };
 
-export interface NodeRequestParams extends RequestArguments {
+export type NodeRequestParams = RequestArguments & {
   networkId: NetworkId;
-}
+};
 
 export async function nodeRequest<T = unknown>({
   networkId,
@@ -63,9 +63,9 @@ export async function nodeRequest<T = unknown>({
   }
 }
 
-export interface FuraRequestParams extends RequestArguments {
+export type FuraRequestParams = RequestArguments & {
   networkId: NetworkId;
-}
+};
 
 export async function furaRequest<T = unknown>({
   networkId,
@@ -109,9 +109,9 @@ export async function furaRequest<T = unknown>({
   }
 }
 
-export interface InvokeReadParams extends InvokeParams {
+export type InvokeReadParams = InvokeParams & {
   networkId: NetworkId;
-}
+};
 
 export async function invokeRead<T = unknown>(params: InvokeReadParams): Promise<T> {
   const result = await nodeRequest<T>({
@@ -140,9 +140,9 @@ export async function invokeRead<T = unknown>(params: InvokeReadParams): Promise
   throw finalError;
 }
 
-export interface InvokeReadMultipleParams extends InvokeMultipleParams {
+export type InvokeReadMultipleParams = InvokeMultipleParams & {
   networkId: NetworkId;
-}
+};
 
 export async function invokeReadMultiple<T = unknown>(
   params: InvokeReadMultipleParams,
@@ -169,10 +169,10 @@ export async function invokeReadMultiple<T = unknown>(
   throw finalError;
 }
 
-export interface WaitForTransactionParams {
+export type WaitForTransactionParams = {
   networkId: NetworkId;
   transactionHash: string;
-}
+};
 
 export async function waitForTransaction(params: WaitForTransactionParams): Promise<number> {
   let retryCount = 0;

@@ -3,11 +3,11 @@ import { addressToScriptHash } from 'utils/convertors';
 import { NetworkId } from 'utils/models';
 import { invokeRead } from 'utils/web3';
 
-export interface GetNep17RawBalanceParams {
+export type GetNep17RawBalanceParams = {
   networkId: NetworkId;
   address: string;
   contractHash: string;
-}
+};
 
 export async function getNep17RawBalance(params: GetNep17RawBalanceParams): Promise<string> {
   const result = await invokeRead<[{ value: string }]>({
@@ -19,13 +19,13 @@ export async function getNep17RawBalance(params: GetNep17RawBalanceParams): Prom
   return result[0].value;
 }
 
-export interface TransferNep17Params {
+export type TransferNep17Params = {
   networkId: NetworkId;
   address: string;
   contractHash: string;
   to: string;
   rawAmount: string;
-}
+};
 
 export async function transferNep17(params: TransferNep17Params): Promise<string> {
   const { connector } = await ensureWalletReady({

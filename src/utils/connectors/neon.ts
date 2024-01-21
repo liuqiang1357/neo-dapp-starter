@@ -27,9 +27,9 @@ const WALLET_NETWORKS: Record<NetworkId, NetworkType> = {
   [NetworkId.TestNet]: 'neo3:testnet',
 };
 
-export interface NeonConnectorOptions {
+export type NeonConnectorOptions = {
   signClientOptions: SignClientTypes.Options;
-}
+};
 
 export class NeonConnector extends Connector {
   private wcSdk: WcSdk | null = null;

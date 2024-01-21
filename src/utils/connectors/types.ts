@@ -2,35 +2,35 @@ import { Argument, Attribute, Invocation, Signer } from '@neongd/neo-dapi';
 import EventEmitter from 'eventemitter3';
 import { NetworkId } from 'utils/models';
 
-export interface ConnectParams {
+export type ConnectParams = {
   networkId?: NetworkId;
-}
+};
 
-export interface InvokeParams {
+export type InvokeParams = {
   scriptHash: string;
   operation: string;
   args?: Argument[];
   signers?: Signer[];
-}
+};
 
-export interface InvokeMultipleParams {
+export type InvokeMultipleParams = {
   invocations: Invocation[];
   signers?: Signer[];
-}
+};
 
-export interface SignMessageParams {
+export type SignMessageParams = {
   message: string;
   withoutSalt?: boolean;
-}
+};
 
-export interface SignMessageResult {
+export type SignMessageResult = {
   message: string;
   salt?: string;
   publicKey: string;
   signature: string;
-}
+};
 
-export interface SignTransactionParams {
+export type SignTransactionParams = {
   version: number;
   nonce: number;
   systemFee: string;
@@ -41,22 +41,22 @@ export interface SignTransactionParams {
   attributes?: Attribute[];
   signers?: Signer[];
   network?: NetworkId;
-}
+};
 
-export interface SignTransactionResult {
+export type SignTransactionResult = {
   signature: string;
   publicKey: string;
-}
+};
 
-export interface ConnectorData {
+export type ConnectorData = {
   address: string | null;
   networkId: NetworkId | null;
   version: string | null;
-}
+};
 
-export interface ConnectorEvents {
+export type ConnectorEvents = {
   change(data: ConnectorData): void;
-}
+};
 
 export abstract class Connector extends EventEmitter<ConnectorEvents> {
   abstract init(): Promise<void>;

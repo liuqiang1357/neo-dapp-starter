@@ -5,11 +5,11 @@ export enum NetworkId {
   MainNet = 'MainNet',
 }
 
-export interface NetworkConfig {
+export type NetworkConfig = {
   name: string;
   nodeUrl: string;
   furaUrl: string;
-}
+};
 
 export enum WalletId {
   OneGate = 'OneGate',
@@ -18,15 +18,15 @@ export enum WalletId {
   Neon = 'Neon',
 }
 
-export interface WalletConfig {
+export type WalletConfig = {
   name: string;
   icon: string;
   downloadUrl: string;
   minimumVersion: string;
-}
+};
 
-export interface ConnectionData extends ConnectorData {
+export type ConnectionData = ConnectorData & {
   walletId: WalletId;
   ready: boolean | null;
   connected: boolean;
-}
+};
