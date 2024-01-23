@@ -140,7 +140,7 @@ export class NeonConnector extends Connector {
   }
 
   private getWcSdk() {
-    if (this.wcSdk) {
+    if (this.wcSdk != null) {
       return this.wcSdk;
     }
     throw new Error('wc sdk is not inited');

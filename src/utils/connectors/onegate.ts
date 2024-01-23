@@ -30,7 +30,7 @@ export class OneGateConnector extends Connector {
   private dapi: Dapi | null = null;
 
   async init(): Promise<void> {
-    if (window.OneGate) {
+    if (window.OneGate != null) {
       this.dapi = new BaseDapi(window.OneGate);
     }
   }
@@ -48,7 +48,7 @@ export class OneGateConnector extends Connector {
     await this.getDapi().getAccount();
     localStorage.setItem(ONEGATE_CONNECTED, 'true');
 
-    if (window.OneGate) {
+    if (window.OneGate != null) {
       window.OneGate.on('accountChanged', this.updateData);
       window.OneGate.on('networkChanged', this.updateData);
     }
@@ -58,7 +58,7 @@ export class OneGateConnector extends Connector {
   async disconnect(): Promise<void> {
     localStorage.removeItem(ONEGATE_CONNECTED);
 
-    if (window.OneGate) {
+    if (window.OneGate != null) {
       window.OneGate.removeListener('accountChanged', this.updateData);
       window.OneGate.removeListener('networkChanged', this.updateData);
     }
@@ -99,7 +99,7 @@ export class OneGateConnector extends Connector {
 
   @Catch('handleError')
   private getDapi() {
-    if (this.dapi) {
+    if (this.dapi != null) {
       return this.dapi;
     }
     throw new Error('neo dapi is not inited');
