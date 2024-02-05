@@ -149,7 +149,7 @@ export async function ensureWalletReady({
     });
   }
   if (address != null && web3State.address !== address) {
-    throw new WalletError('Wallet does not have an account.', {
+    throw new WalletError('Wallet account and web account do not match.', {
       code: WalletError.Codes.MismatchedAccount,
     });
   }
