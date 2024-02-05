@@ -20,7 +20,7 @@ export const Home: FC = () => {
       : null,
   );
 
-  const { mutateAsync: transfer, isLoading: sending } = useTransferNep17();
+  const { mutateAsync: transfer, isPending: sending } = useTransferNep17();
 
   const send = async () => {
     if (
