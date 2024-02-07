@@ -5,8 +5,8 @@ import { invokeRead } from 'utils/web3';
 
 export type GetNep17RawBalanceParams = {
   networkId: NetworkId;
-  address: string;
   contractHash: string;
+  address: string;
 };
 
 export async function getNep17RawBalance(params: GetNep17RawBalanceParams): Promise<string> {
@@ -21,8 +21,8 @@ export async function getNep17RawBalance(params: GetNep17RawBalanceParams): Prom
 
 export type TransferNep17Params = {
   networkId: NetworkId;
-  address: string;
   contractHash: string;
+  address: string;
   to: string;
   rawAmount: string;
 };

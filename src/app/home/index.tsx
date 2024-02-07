@@ -15,8 +15,8 @@ export const Home: FC = () => {
   const { networkId, address } = useSnapshot(web3State);
 
   const { data: rawBalance } = useNep17RawBalance(
-    networkId != null && address != null && contractHash !== ''
-      ? { networkId, address, contractHash }
+    networkId != null && contractHash !== '' && address != null
+      ? { networkId, contractHash, address }
       : null,
   );
 
@@ -25,12 +25,12 @@ export const Home: FC = () => {
   const send = async () => {
     if (
       networkId != null &&
-      address != null &&
       contractHash !== '' &&
+      address != null &&
       to !== '' &&
       rawAmount !== ''
     ) {
-      await transfer({ networkId, address, contractHash, to, rawAmount });
+      await transfer({ networkId, contractHash, address, to, rawAmount });
     }
   };
 
