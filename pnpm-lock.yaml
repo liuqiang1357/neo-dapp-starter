@@ -12,14 +12,11 @@ dependencies:
     specifier: ^2.5.4
     version: 2.6.1
   '@neongd/json-rpc':
-    specifier: ^1.2.1
-    version: 1.2.1
+    specifier: ^2.0.0
+    version: 2.0.0
   '@neongd/neo-dapi':
-    specifier: ^1.2.1
-    version: 1.2.1
-  '@neongd/neo-provider':
-    specifier: ^1.2.1
-    version: 1.2.1
+    specifier: ^2.0.0
+    version: 2.0.0
   '@tanstack/react-query':
     specifier: ^5.18.1
     version: 5.18.1(react@18.2.0)
@@ -523,14 +520,6 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@cityofzion/neon-api@5.4.0(@cityofzion/neon-core@5.5.1):
-    resolution: {integrity: sha512-FHjdq2RnZLK37Hpd71yhVMkmbhl/iyPrmmAiEKb4mf5/rLtbNaKEEEJsxRkSNasio9+14cd7+BecIZ/35L1Sbg==}
-    peerDependencies:
-      '@cityofzion/neon-core': ^5.0.0
-    dependencies:
-      '@cityofzion/neon-core': 5.5.1
-    dev: false
-
   /@cityofzion/neon-core@5.5.1:
     resolution: {integrity: sha512-cqJ+RYTdUVoUl2e3I5bqgAvYFuqGd2M8lmgUgH/+kf0zS0b8EuKwliauJ2EA56fudwaXtCmmHZTfRBFs+RJ2vw==}
     engines: {node: '>=16.19.0'}
@@ -551,15 +540,6 @@ packages:
 
   /@cityofzion/neon-dappkit-types@0.0.5:
     resolution: {integrity: sha512-SRjmfzgI1aNhXdKby4gRrJBveFeSAdttSaLwNfQ/Xq19VwM2NOf2NATg7wDrtTY4sQLKwCyPjPaAePZwKLP8Xw==}
-    dev: false
-
-  /@cityofzion/neon-js@5.5.1:
-    resolution: {integrity: sha512-iCoE5PGKy3Kj36dR3aevkVOKK4yB1Mq/0WEUQzrzMkGOGBNJXa2+cTtmSi39tDkgxSHibvS77S5oZ6QGIXMCdg==}
-    dependencies:
-      '@cityofzion/neon-api': 5.4.0(@cityofzion/neon-core@5.5.1)
-      '@cityofzion/neon-core': 5.5.1
-    transitivePeerDependencies:
-      - encoding
     dev: false
 
   /@cityofzion/wallet-connect-sdk-core@2.6.1:
@@ -894,37 +874,29 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@neongd/json-rpc@1.2.1:
-    resolution: {integrity: sha512-hlg5uG2lyflfZxQ8P05Jnzuar9SVgiVUxPHtX9UYH4zQ5trFfp6CJ58TUJ+kUCWynLLjwmzgGwHil7S/zueX+Q==}
+  /@neongd/json-rpc@2.0.0:
+    resolution: {integrity: sha512-77I7dwCRxHbYgh4Ld074wfm7YGp23B3JODNt4TiG4MEhFGdHlNBAcj+VsSR0xOaRuNR7O14to4Dk4Krzt1ZOWA==}
     dependencies:
-      '@types/websocket': 1.0.8
-      axios: 0.21.4
-      events: 3.3.0
+      async-await-mutex-lock: 1.0.11
+      axios: 1.6.7
+      eventemitter3: 5.0.1
       websocket: 1.0.34
     transitivePeerDependencies:
       - debug
       - supports-color
     dev: false
 
-  /@neongd/neo-dapi@1.2.1:
-    resolution: {integrity: sha512-JOnsr6vjJDlRuJcbPourjjodnCPiLb5fJ6J/IuSW6UuiX/8CS6zNfrhZGXveZTzZrE84ysfiF+QVhxR5VfCdqw==}
+  /@neongd/neo-dapi@2.0.0:
+    resolution: {integrity: sha512-+pYeGHdWq6LnJaN6ZBg0up42o8P/6ctYq5gy4fQRacxVl1wWRpnLbX/qYUb6k70RAxyErxUekipRykAj2/3/kQ==}
     dependencies:
-      '@cityofzion/neon-js': 5.5.1
-      '@neongd/json-rpc': 1.2.1
-      '@neongd/neo-provider': 1.2.1
+      '@cityofzion/neon-core': 5.5.1
+      '@neongd/json-rpc': 2.0.0
+      bignumber.js: 9.1.2
+      buffer: 6.0.3
+      eventemitter3: 5.0.1
     transitivePeerDependencies:
       - debug
       - encoding
-      - supports-color
-    dev: false
-
-  /@neongd/neo-provider@1.2.1:
-    resolution: {integrity: sha512-tdtbwm2rFOlxNNfcfLhLdGs6iMJKb/+iuPiyt+DAeJDDKExoGGGpZr94CsfZczixO/y38IgkdzNFoAVG2jTcLA==}
-    dependencies:
-      '@neongd/json-rpc': 1.2.1
-      events: 3.3.0
-    transitivePeerDependencies:
-      - debug
       - supports-color
     dev: false
 
@@ -1339,6 +1311,7 @@ packages:
     resolution: {integrity: sha512-TlgT8JntpcbmKUFzjhsyhGfP2fsiz1Mv56im6enJ905xG1DAYesxJaeSbGqQmAw8OWPdhyJGhGSQGKRNJ45u9w==}
     dependencies:
       undici-types: 5.26.5
+    dev: true
 
   /@types/prop-types@15.7.9:
     resolution: {integrity: sha512-n1yyPsugYNSmHgxDFjicaI2+gCNjsBck8UX9kuofAKlc0h1bL+20oSF72KeNaW2DUlesbEVCFgyV2dPGTiY42g==}
@@ -1368,12 +1341,6 @@ packages:
   /@types/semver@7.5.4:
     resolution: {integrity: sha512-MMzuxN3GdFwskAnb6fz0orFvhfqi752yjaXylr0Rp4oDg5H0Zn1IuyRhDVvYOwAXoJirx2xuS16I3WjxnAIHiQ==}
     dev: true
-
-  /@types/websocket@1.0.8:
-    resolution: {integrity: sha512-wvkOpWApbuxVfHhSQ1XrjVN4363vsfLJwEo4AboIZk0g1vJA5nmLp8GXUHuIdf4/Fe7+/V0Efe2HvWiLqHtlqw==}
-    dependencies:
-      '@types/node': 20.8.10
-    dev: false
 
   /@typescript-eslint/eslint-plugin@6.10.0(@typescript-eslint/parser@6.10.0)(eslint@8.53.0)(typescript@5.2.2):
     resolution: {integrity: sha512-uoLj4g2OTL8rfUQVx2AFO1hp/zja1wABJq77P6IclQs6I/m9GLrm7jCdgzZkvWdDCQf1uEvoa8s8CupsgWQgVg==}
@@ -2046,6 +2013,10 @@ packages:
     resolution: {integrity: sha512-eBvWn1lvIApYMhzQMsu9ciLfkBY499mFZlNqG+/9WR7PVlroQw0vG30cOQQbaKz3sCEc44TAOu2ykzqXSNnwag==}
     dev: false
 
+  /async-await-mutex-lock@1.0.11:
+    resolution: {integrity: sha512-R2R6ITf/q3o/cU6XknJCG+5ya2UgdC/73mTVkYvoyoJP6B0+K6FG9MuxIycR627Exn4fA/nqgHhDw58txzkfgw==}
+    dev: false
+
   /async-limiter@1.0.1:
     resolution: {integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==}
     dev: false
@@ -2090,18 +2061,20 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios@0.21.4:
-    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
-    dependencies:
-      follow-redirects: 1.15.3
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /axios@1.6.0:
     resolution: {integrity: sha512-EZ1DYihju9pwVB+jg67ogm+Tmqc6JmhamRN6I4Zt8DfZu5lbcQGw3ozH9lFejSJgs/ibaef3A9PMXPLeefFGJg==}
     dependencies:
       follow-redirects: 1.15.3
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /axios@1.6.7:
+    resolution: {integrity: sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==}
+    dependencies:
+      follow-redirects: 1.15.5
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -2150,6 +2123,10 @@ packages:
     resolution: {integrity: sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==}
     engines: {node: '>=0.6'}
     dev: true
+
+  /bignumber.js@9.1.2:
+    resolution: {integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==}
+    dev: false
 
   /binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -3402,6 +3379,16 @@ packages:
 
   /follow-redirects@1.15.3:
     resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
+
+  /follow-redirects@1.15.5:
+    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -6396,6 +6383,7 @@ packages:
 
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+    dev: true
 
   /untildify@4.0.0:
     resolution: {integrity: sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==}

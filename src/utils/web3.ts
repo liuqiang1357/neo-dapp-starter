@@ -1,13 +1,13 @@
 import { Buffer } from 'buffer';
 import { ContractParam, createScript } from '@cityofzion/neon-core/lib/sc';
-import { BaseJsonRpcTransport, RequestArguments, StandardErrorCodes } from '@neongd/json-rpc';
+import { BaseTransport, Json, RequestArguments, StandardErrorCodes } from '@neongd/json-rpc';
+import { signerJsonToSigner } from '@neongd/neo-dapi';
 import axios from 'axios';
 import delay from 'delay';
 import pMemoize from 'p-memoize';
 import { NetworkId, WalletId } from 'utils/models';
 import { NETWORK_CONFIGS } from './configs';
 import { Connector, InvokeMultipleParams, InvokeParams } from './connectors/types';
-import { serializeSigner } from './convertors';
 import { BackendError } from './errors';
 
 export const CONNECTORS: Record<WalletId, () => Promise<Connector>> = {
@@ -44,17 +44,17 @@ export type NodeRequestParams = RequestArguments & {
   networkId: NetworkId;
 };
 
-export async function nodeRequest<T = unknown>({
+export async function nodeRequest<T extends Json = Json>({
   networkId,
   ...rest
 }: NodeRequestParams): Promise<T> {
   try {
     const url = NETWORK_CONFIGS[networkId].nodeUrl;
-    const transport = new BaseJsonRpcTransport(url);
-    return await transport.request(rest);
+    const transport = new BaseTransport(url);
+    return await transport.request<T>(rest);
   } catch (error: any) {
     let code = BackendError.Codes.UnknownError;
-    if (error.code === StandardErrorCodes.NetworkError) {
+    if (error.code === StandardErrorCodes.CommunicationFailed) {
       code = BackendError.Codes.NetworkError;
     } else if (error.code === -100) {
       code = BackendError.Codes.NotFound;
@@ -67,7 +67,7 @@ export type FuraRequestParams = RequestArguments & {
   networkId: NetworkId;
 };
 
-export async function furaRequest<T = unknown>({
+export async function furaRequest<T extends Json = Json>({
   networkId,
   ...rest
 }: FuraRequestParams): Promise<T> {
@@ -113,20 +113,14 @@ export type InvokeReadParams = InvokeParams & {
   networkId: NetworkId;
 };
 
-export async function invokeRead<T = unknown>(params: InvokeReadParams): Promise<T> {
+export async function invokeRead<T extends Json = Json>(params: InvokeReadParams): Promise<T> {
   const result = await nodeRequest<T>({
     method: 'invokefunction',
     params: [
       params.scriptHash,
       params.operation,
       params.args ?? [],
-      (params.signers ?? []).map(signer => ({
-        account: signer.account,
-        scopes: signer.scopes,
-        allowedcontracts: signer.allowedContracts,
-        allowedgroups: signer.allowedGroups,
-        rules: signer.rules,
-      })),
+      (params.signers ?? []).map(signerJsonToSigner),
     ],
     networkId: params.networkId,
   });
@@ -144,19 +138,19 @@ export type InvokeReadMultipleParams = InvokeMultipleParams & {
   networkId: NetworkId;
 };
 
-export async function invokeReadMultiple<T = unknown>(
+export async function invokeReadMultiple<T extends Json = Json>(
   params: InvokeReadMultipleParams,
 ): Promise<T> {
   const script = createScript(
     ...params.invocations.map(invocation => ({
       ...invocation,
-      args: invocation.args?.map(arg => ContractParam.fromJson(arg)),
+      args: invocation.args?.map(arg => ContractParam.fromJson(arg as any)),
     })),
   );
   const base64Script = Buffer.from(script, 'hex').toString('base64');
   const result = await nodeRequest<T>({
     method: 'invokescript',
-    params: [base64Script, (params.signers ?? []).map(serializeSigner)],
+    params: [base64Script, (params.signers ?? []).map(signerJsonToSigner)],
     networkId: params.networkId,
   });
   if ((result as any).exception == null) {

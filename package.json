@@ -16,9 +16,8 @@
   "dependencies": {
     "@cityofzion/neon-core": "^5.5.0",
     "@cityofzion/wallet-connect-sdk-core": "^2.5.4",
-    "@neongd/json-rpc": "^1.2.1",
-    "@neongd/neo-dapi": "^1.2.1",
-    "@neongd/neo-provider": "^1.2.1",
+    "@neongd/json-rpc": "^2.0.0",
+    "@neongd/neo-dapi": "^2.0.0",
     "@tanstack/react-query": "^5.18.1",
     "@tanstack/react-query-devtools": "^5.18.1",
     "@walletconnect/sign-client": "2.7.3",

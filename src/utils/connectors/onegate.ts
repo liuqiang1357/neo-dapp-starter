@@ -1,6 +1,6 @@
 import { StandardErrorCodes } from '@neongd/json-rpc';
 import { BaseDapi, Dapi, DapiErrorCodes } from '@neongd/neo-dapi';
-import { Provider } from '@neongd/neo-provider';
+import { Provider } from '@neongd/neo-dapi';
 import { Catch } from 'catchee';
 import { WalletError } from 'utils/errors';
 import { NetworkId } from 'utils/models';
