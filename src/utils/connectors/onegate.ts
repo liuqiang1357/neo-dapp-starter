@@ -77,17 +77,27 @@ export class OneGateConnector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
-    if (withoutSalt !== true) {
-      const { salt, publicKey, signature } = await this.getDapi().signMessage({
-        message,
-      });
-      return { message, salt, publicKey, signature };
+  async signMessage({
+    version,
+    message,
+    withoutSalt,
+  }: SignMessageParams): Promise<SignMessageResult> {
+    if (version === 1) {
+      if (withoutSalt !== true) {
+        const { salt, publicKey, signature } = await this.getDapi().signMessage({
+          message,
+        });
+        return { message, salt, publicKey, signature };
+      } else {
+        const { publicKey, signature } = await this.getDapi().signMessageWithoutSalt({
+          message,
+        });
+        return { message, publicKey, signature };
+      }
     } else {
-      const { publicKey, signature } = await this.getDapi().signMessageWithoutSalt({
-        message,
+      throw new WalletError(`Sign message version ${version} is not supported.`, {
+        code: WalletError.Codes.UnsupportedOperation,
       });
-      return { message, publicKey, signature };
     }
   }
 
@@ -117,6 +127,9 @@ export class OneGateConnector extends Connector {
   }
 
   protected handleError(error: any): never {
+    if (error instanceof WalletError) {
+      throw error;
+    }
     let code = WalletError.Codes.UnknownError;
     switch (error.code) {
       case StandardErrorCodes.InvalidParams:

@@ -105,18 +105,32 @@ export class O3Connector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
-    if (withoutSalt !== true) {
-      const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
-      return { message, salt, publicKey, signature };
+  async signMessage({
+    version,
+    message,
+    withoutSalt,
+  }: SignMessageParams): Promise<SignMessageResult> {
+    if (version === 1) {
+      if (withoutSalt !== true) {
+        const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
+        return { message, salt, publicKey, signature };
+      } else {
+        throw new WalletError('Sign messsage without salt is not supported.', {
+          code: WalletError.Codes.UnsupportedOperation,
+        });
+      }
     } else {
-      throw new Error('Parameter withoutSalt is not supported.');
+      throw new WalletError(`Sign message version ${version} is not supported.`, {
+        code: WalletError.Codes.UnsupportedOperation,
+      });
     }
   }
 
   @Catch('handleError')
   async signTransaction(_params: SignTransactionParams): Promise<SignTransactionResult> {
-    throw new Error('Method not implemented.');
+    throw new WalletError('Method not implemented.', {
+      code: WalletError.Codes.UnsupportedOperation,
+    });
   }
 
   @Catch('handleError')
@@ -137,6 +151,9 @@ export class O3Connector extends Connector {
   }
 
   protected handleError(error: any): never {
+    if (error instanceof WalletError) {
+      throw error;
+    }
     let code = WalletError.Codes.UnknownError;
     switch (error.type) {
       case 'NO_PROVIDER':

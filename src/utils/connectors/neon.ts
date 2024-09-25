@@ -110,22 +110,36 @@ export class NeonConnector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
-    if (withoutSalt !== true) {
-      const {
-        salt,
-        publicKey,
-        data: signature,
-      } = await this.getWcSdk().signMessage({ message, version: 1 });
-      return { message, salt, publicKey, signature };
+  async signMessage({
+    version,
+    message,
+    withoutSalt,
+  }: SignMessageParams): Promise<SignMessageResult> {
+    if (version === 1) {
+      if (withoutSalt !== true) {
+        const {
+          salt,
+          publicKey,
+          data: signature,
+        } = await this.getWcSdk().signMessage({ message, version: 1 });
+        return { message, salt, publicKey, signature };
+      } else {
+        throw new WalletError('Sign messsage without salt is not supported.', {
+          code: WalletError.Codes.UnsupportedOperation,
+        });
+      }
     } else {
-      throw new Error('Parameter withoutSalt is not supported.');
+      throw new WalletError(`Sign message version ${version} is not supported.`, {
+        code: WalletError.Codes.UnsupportedOperation,
+      });
     }
   }
 
   @Catch('handleError')
   async signTransaction(_params: SignTransactionParams): Promise<SignTransactionResult> {
-    throw new Error('Method not implemented.');
+    throw new WalletError('Method not implemented.', {
+      code: WalletError.Codes.UnsupportedOperation,
+    });
   }
 
   @Catch('handleError')
@@ -147,6 +161,9 @@ export class NeonConnector extends Connector {
   }
 
   protected handleError(error: any): never {
+    if (error instanceof WalletError) {
+      throw error;
+    }
     const code = WalletError.Codes.UnknownError;
     // TODO: convert errors
     throw new WalletError(error.message, { cause: error, code });

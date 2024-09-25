@@ -56,6 +56,7 @@ enum WalletErrorCodes {
   RemoteRpcError = 'RemoteRpcError',
   UnsupportedNetwork = 'UnsupportedNetwork',
   FailedToSwitchNetwork = 'FailedToSwitchNetwork',
+  UnsupportedOperation = 'UnsupportedOperation',
 }
 
 export type WalletErrorOptions = BaseErrorOptions & {

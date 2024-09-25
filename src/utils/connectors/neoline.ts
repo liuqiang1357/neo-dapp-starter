@@ -99,15 +99,43 @@ export class NeoLineConnector extends Connector {
   }
 
   @Catch('handleError')
-  async signMessage({ withoutSalt, message }: SignMessageParams): Promise<SignMessageResult> {
-    if (withoutSalt !== true) {
-      const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
-      return { message, salt, publicKey, signature };
+  async signMessage({
+    version,
+    message,
+    withoutSalt,
+  }: SignMessageParams): Promise<SignMessageResult> {
+    if (version === 1) {
+      if (withoutSalt !== true) {
+        const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
+        return { message, salt, publicKey, signature };
+      } else {
+        const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSalt({
+          message,
+        });
+        return { message, publicKey, signature };
+      }
+    } else if (
+      version === 2 &&
+      this.neoDapiN3.signMessageV2 != null &&
+      this.neoDapiN3.signMessageWithoutSaltV2 != null
+    ) {
+      if (withoutSalt !== true) {
+        const {
+          salt,
+          publicKey,
+          data: signature,
+        } = await this.neoDapiN3.signMessageV2({ message });
+        return { message, salt, publicKey, signature };
+      } else {
+        const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSaltV2({
+          message,
+        });
+        return { message, publicKey, signature };
+      }
     } else {
-      const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSalt({
-        message,
+      throw new WalletError(`Sign message version ${version} is not supported.`, {
+        code: WalletError.Codes.UnsupportedOperation,
       });
-      return { message, publicKey, signature };
     }
   }
 
@@ -149,6 +177,9 @@ export class NeoLineConnector extends Connector {
   }
 
   protected handleError(error: any): never {
+    if (error instanceof WalletError) {
+      throw error;
+    }
     let code = WalletError.Codes.UnknownError;
     switch (error.type) {
       case 'NO_PROVIDER':

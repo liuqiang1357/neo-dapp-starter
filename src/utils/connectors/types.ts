@@ -19,6 +19,7 @@ export type InvokeMultipleParams = {
 };
 
 export type SignMessageParams = {
+  version: number;
   message: string;
   withoutSalt?: boolean;
 };
