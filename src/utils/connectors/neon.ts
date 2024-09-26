@@ -124,7 +124,7 @@ export class NeonConnector extends Connector {
         } = await this.getWcSdk().signMessage({ message, version: 1 });
         return { message, salt, publicKey, signature };
       } else {
-        throw new WalletError('Sign messsage without salt is not supported.', {
+        throw new WalletError('Sign message without salt is not supported.', {
           code: WalletError.Codes.UnsupportedOperation,
         });
       }

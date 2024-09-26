@@ -115,7 +115,7 @@ export class O3Connector extends Connector {
         const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
         return { message, salt, publicKey, signature };
       } else {
-        throw new WalletError('Sign messsage without salt is not supported.', {
+        throw new WalletError('Sign message without salt is not supported.', {
           code: WalletError.Codes.UnsupportedOperation,
         });
       }
