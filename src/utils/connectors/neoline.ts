@@ -107,12 +107,12 @@ export class NeoLineConnector extends Connector {
     if (version === 1) {
       if (withoutSalt !== true) {
         const { salt, publicKey, data: signature } = await this.neoDapiN3.signMessage({ message });
-        return { message, salt, publicKey, signature };
+        return { salt, publicKey, signature };
       } else {
         const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSalt({
           message,
         });
-        return { message, publicKey, signature };
+        return { publicKey, signature };
       }
     } else if (
       version === 2 &&
@@ -125,12 +125,12 @@ export class NeoLineConnector extends Connector {
           publicKey,
           data: signature,
         } = await this.neoDapiN3.signMessageV2({ message });
-        return { message, salt, publicKey, signature };
+        return { salt, publicKey, signature };
       } else {
         const { publicKey, data: signature } = await this.neoDapiN3.signMessageWithoutSaltV2({
           message,
         });
-        return { message, publicKey, signature };
+        return { publicKey, signature };
       }
     } else {
       throw new WalletError(`Sign message version ${version} is not supported.`, {
@@ -154,9 +154,9 @@ export class NeoLineConnector extends Connector {
       },
       magicNumber: MAGIC_NUMBERS[params.network ?? NetworkId.MainNet],
     });
-    const signatures = getSignaturesFromInvocationScript(result.witnesses[0].invocationScript);
     const publicKey = getPublicKeyFromVerificationScript(result.witnesses[0].verificationScript);
-    return { signature: signatures[0], publicKey };
+    const signatures = getSignaturesFromInvocationScript(result.witnesses[0].invocationScript);
+    return { publicKey, signature: signatures[0] };
   }
 
   @Catch('handleError')

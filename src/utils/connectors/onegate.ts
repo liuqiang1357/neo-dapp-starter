@@ -87,12 +87,12 @@ export class OneGateConnector extends Connector {
         const { salt, publicKey, signature } = await this.getDapi().signMessage({
           message,
         });
-        return { message, salt, publicKey, signature };
+        return { salt, publicKey, signature };
       } else {
         const { publicKey, signature } = await this.getDapi().signMessageWithoutSalt({
           message,
         });
-        return { message, publicKey, signature };
+        return { publicKey, signature };
       }
     } else {
       throw new WalletError(`Sign message version ${version} is not supported.`, {

@@ -25,7 +25,6 @@ export type SignMessageParams = {
 };
 
 export type SignMessageResult = {
-  message: string;
   salt?: string;
   publicKey: string;
   signature: string;
@@ -45,8 +44,8 @@ export type SignTransactionParams = {
 };
 
 export type SignTransactionResult = {
-  signature: string;
   publicKey: string;
+  signature: string;
 };
 
 export type ConnectorData = {
