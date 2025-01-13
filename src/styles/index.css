@@ -1,16 +1,20 @@
-@import 'antd/dist/reset.css';
-@import './antd.css';
+@import './shadcn.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  @apply antialiased;
-}
-
-*,
-::before,
-::after {
-  @apply box-border border-0 border-solid border-current;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-sans text-foreground;
+  }
+  nextjs-portal {
+    @apply hidden;
+  }
+  #react-refresh-overlay {
+    @apply hidden;
+  }
 }
