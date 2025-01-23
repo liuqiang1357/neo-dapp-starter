@@ -7,12 +7,12 @@ export enum ChainId {
   Testnet = 'testnet',
 }
 
+export const supportedChainIds = [ChainId.Mainnet, ChainId.Testnet];
+
 export const chainNames: Record<ChainId, string> = {
   [ChainId.Mainnet]: 'MainNet',
   [ChainId.Testnet]: 'TestNet',
 };
-
-export const supportedChainIds = [ChainId.Mainnet, ChainId.Testnet];
 
 export const rpcUrls: Record<ChainId, string> = {
   [ChainId.Mainnet]: 'https://n3seed2.ngd.network:10332',
