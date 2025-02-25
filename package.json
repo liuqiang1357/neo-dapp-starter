@@ -7,6 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "pages:dev": "pnpm run pages:build && wrangler pages dev",
+    "pages:build": "pnpx @cloudflare/next-on-pages",
+    "pages:deploy": "pnpm run pages:build && wrangler pages deploy",
     "typecheck": "tsc",
     "lint": "eslint --max-warnings 0 .",
     "test": "vitest run",
@@ -48,6 +51,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.8",
     "@eslint/js": "^9.18.0",
     "@next/eslint-plugin-next": "^15.1.5",
     "@storybook/addon-essentials": "^8.5.0",
@@ -81,7 +85,8 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.3"
+    "vitest": "^3.0.3",
+    "wrangler": "^3.109.3"
   },
   "engines": {
     "node": ">=20",
